@@ -1,8 +1,8 @@
 import 'dotenv/config';
-import { Dan } from './dan.js';
+import { Fable } from './fable.js';
 import { logger } from './util/logger.js';
 
-const bot = new Dan();
+const bot = new Fable();
 
 // Global Crash Prevention with crash rate limit tracking (D10 Fix)
 let exceptionCount = 0;

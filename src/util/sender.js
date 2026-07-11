@@ -1,7 +1,7 @@
 /**
  * Centralized message sender utility.
  * 
- * Dan adapted format:
+ * Fable adapted format:
  * 
  *   **${emoji} | ${username}**${content}
  */

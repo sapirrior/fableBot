@@ -1,11 +1,11 @@
 /**
- * Thin bot lifecycle orchestrator (dan.js).
+ * Thin bot lifecycle orchestrator (fable.js).
  * delegates startup sequence to Bootstrap and cleanup to Shutdown.
  */
 import { bootstrap } from './core/Bootstrap.js';
 import { shutdown } from './core/Shutdown.js';
 
-export class Dan {
+export class Fable {
   constructor() {
     this.client = null;
   }

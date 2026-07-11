@@ -1,4 +1,4 @@
-# Dan (`danBot`)
+# Fable (`fableBot`)
 
 A zero-bloat, high-performance prefix-command Discord bot built on Node.js, ESM, and `node:sqlite`. 
 
@@ -62,7 +62,7 @@ npm test          # Run the built-in Node test suite (infrastructure validation)
 
 ```
 src/
-├── dan.js                 # thin bot lifecycle orchestrator
+├── fable.js               # thin bot lifecycle orchestrator
 ├── index.js               # application entry point & process guard listeners
 ├── core/
 │   ├── Bootstrap.js       # startup sequencing & ServiceContainer initialization
@@ -94,7 +94,7 @@ src/
 
 ## Development Guidelines
 
-- **For AI Agents**: See [AGENTS.md](file:///data/data/com.termux/files/home/works/danBot/AGENTS.md) for strict rules, hard boundaries, code styling, and architectural rules.
+- **For AI Agents**: See [AGENTS.md](AGENTS.md) for strict rules, hard boundaries, code styling, and architectural rules.
 - **For Humans**:
   - Always write clean, vanilla ESM JavaScript (`import`/`export` and no bundler).
   - Add new features as independent services under `src/services/` and register them inside `src/core/Bootstrap.js` (Open/Closed Principle). Do not dump utility logic directly into `messageCreate.js`.

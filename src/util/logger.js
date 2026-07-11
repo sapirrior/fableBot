@@ -12,17 +12,17 @@ function formatTime() {
 }
 
 export const logger = {
-  info(msg, tag = 'Dan') {
+  info(msg, tag = 'Fable') {
     const time = formatTime();
     console.log(`${COLORS.time}[${time}]${COLORS.reset} ${COLORS.info}[INFO]${COLORS.reset} [${tag}] ${msg}`);
   },
 
-  warn(msg, tag = 'Dan') {
+  warn(msg, tag = 'Fable') {
     const time = formatTime();
     console.warn(`${COLORS.time}[${time}]${COLORS.reset} ${COLORS.warn}[WARN]${COLORS.reset} [${tag}] ${msg}`);
   },
 
-  error(msg, err = null, tag = 'Dan') {
+  error(msg, err = null, tag = 'Fable') {
     const time = formatTime();
     let displayMsg = msg;
     let stack = '';
@@ -42,7 +42,7 @@ export const logger = {
     }
   },
 
-  debug(msg, tag = 'Dan') {
+  debug(msg, tag = 'Fable') {
     const time = formatTime();
     console.log(`${COLORS.time}[${time}]${COLORS.reset} ${COLORS.debug}[DEBUG]${COLORS.reset} [${tag}] ${msg}`);
   }
