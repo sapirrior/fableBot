@@ -4,5 +4,7 @@
   "cooldownSweepIntervalMs": 300000,
   "dailyCooldownMs": 79200000,
   "dailyRewardCoins": 250,
-  "catchCooldownMs": 10000
+  "catchCooldownMs": 10000,
+  "currencyName": "Fable",
+  "currencyIcon": "⌀"
 }

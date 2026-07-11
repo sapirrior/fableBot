@@ -2,9 +2,11 @@ export default {
   name: 'leaderboard',
   aliases: ['lb', 'top'],
   cooldown: 5000,
-  description: 'View the leaderboard for coins or collection size.',
+  description: 'View the leaderboard for Fable or collection size.',
   async execute(client, message, args, ctx) {
-    const type = (args[0] || 'coins').toLowerCase();
+    const type = (args[0] || '').toLowerCase();
+    const icon = ctx.config.currencyIcon;
+    const name = ctx.config.currencyName;
 
     if (type === 'collection' || type === 'insects' || type === 'col') {
       // Top collections
@@ -37,7 +39,7 @@ export default {
       // Top balances (default)
       const rows = ctx.query('getTopBalance').all(10);
       if (rows.length === 0) {
-        return message.reply('🪹 The coins leaderboard is empty.');
+        return message.reply(`🪹 The ${name} leaderboard is empty.`);
       }
 
       let description = '';
@@ -50,12 +52,12 @@ export default {
         } catch {
           userTag = `Unknown User (${row.user_id})`;
         }
-        description += `${i + 1}. **${userTag}** — **💰 ${row.balance}** coins\n`;
+        description += `${i + 1}. **${userTag}** — **${icon} ${row.balance}** ${name}\n`;
       }
 
       const embed = {
         color: parseInt(ctx.config.embedColor.replace('#', ''), 16),
-        title: '🏆 Fable Leaderboard - Richest Users',
+        title: `🏆 Fable Leaderboard - Richest Users`,
         description,
         timestamp: new Date()
       };

@@ -4,24 +4,28 @@ export default {
   name: 'give',
   aliases: ['pay', 'transfer'],
   cooldown: 5000,
-  description: 'Transfer coins to another user.',
+  description: 'Transfer currency to another user.',
   async execute(client, message, args, ctx) {
+    const icon = ctx.config.currencyIcon;
+    const name = ctx.config.currencyName;
+    const prefix = ctx.config.prefix;
+
     const target = message.mentions.users.first();
     if (!target) {
-      return message.reply('❓ Please mention a user to transfer coins to. Example: `f!give @user 100`');
+      return message.reply(`❓ Please mention a user to transfer ${name} to. Example: \`${prefix}give @user 100\``);
     }
 
     if (target.id === message.author.id) {
-      return message.reply('❌ You cannot transfer coins to yourself.');
+      return message.reply(`❌ You cannot transfer ${name} to yourself.`);
     }
 
     if (target.bot) {
-      return message.reply('❌ You cannot transfer coins to a bot.');
+      return message.reply(`❌ You cannot transfer ${name} to a bot.`);
     }
 
     const amount = parseInt(args[1] || args[0]);
     if (isNaN(amount) || amount <= 0) {
-      return message.reply('❌ Please specify a valid amount of coins to transfer.');
+      return message.reply(`❌ Please specify a valid amount of ${name} to transfer.`);
     }
 
     // Fetch author details
@@ -29,7 +33,7 @@ export default {
     const authorBalance = authorRow ? authorRow.balance : 0;
 
     if (authorBalance < amount) {
-      return message.reply(`❌ You do not have enough coins! You only have **💰 ${authorBalance}** coins.`);
+      return message.reply(`❌ You do not have enough ${name}! You only have **${icon} ${authorBalance}** ${name}.`);
     }
 
     // Perform transfer within database transaction
@@ -47,6 +51,6 @@ export default {
       return message.reply('❌ Database transaction failed. Transfer aborted.');
     }
 
-    return message.reply(`💸 **|** Successfully transferred **💰 ${amount}** coins to **${target.username}**!`);
+    return message.reply(`💸 **|** Successfully transferred **${icon} ${amount}** ${name} to **${target.username}**!`);
   }
 };

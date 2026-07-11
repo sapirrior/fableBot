@@ -27,6 +27,6 @@ export default {
     // Award daily reward
     ctx.query('claimDaily').run(reward, now, userId);
 
-    return message.reply(`📆 **|** You claimed your daily reward and received **💰 ${reward}** coins!`);
+    return message.reply(`📆 **|** You claimed your daily reward and received **${ctx.config.currencyIcon} ${reward}** ${ctx.config.currencyName}!`);
   }
 };

@@ -50,7 +50,7 @@ export default {
       author: { name: 'Fable Command List', icon_url: message.author.displayAvatarURL() },
       fields: [
         {
-          name: '💰 Economy',
+          name: `${ctx.config.currencyIcon} Economy`,
           value: '`balance`  `daily`  `give`'
         },
         {

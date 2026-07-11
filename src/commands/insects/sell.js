@@ -3,10 +3,14 @@ import { transaction } from '../../db/index.js';
 export default {
   name: 'sell',
   cooldown: 3000,
-  description: 'Sell caught insects for coins.',
+  description: 'Sell caught insects for currency.',
   async execute(client, message, args, ctx) {
+    const icon = ctx.config.currencyIcon;
+    const name = ctx.config.currencyName;
+    const prefix = ctx.config.prefix;
+
     if (!args[0]) {
-      return message.reply('❓ Please specify an insect to sell. Example: `f!sell ant 1` or `f!sell all` to sell all your insects.');
+      return message.reply(`❓ Please specify an insect to sell. Example: \`${prefix}sell ant 1\` or \`${prefix}sell all\` to sell all your insects.`);
     }
 
     const userId = message.author.id;
@@ -44,13 +48,13 @@ export default {
         return message.reply('❌ FAILED to sell insects due to a database error.');
       }
 
-      return message.reply(`💰 **|** Successfully sold **${totalSold}** insects for **💰 ${totalCoinsGained}** coins!`);
+      return message.reply(`${icon} **|** Successfully sold **${totalSold}** insects for **${icon} ${totalCoinsGained}** ${name}!`);
     }
 
     // Option 2: Sell specific insect
     const spec = ctx.insets.find(i => i.id === targetQuery || i.name.toLowerCase() === targetQuery);
     if (!spec) {
-      return message.reply(`❌ Unknown insect species: "${targetQuery}". Use \`f!insectdex\` to view valid insects.`);
+      return message.reply(`❌ Unknown insect species: "${targetQuery}". Use \`${prefix}insectdex\` to view valid insects.`);
     }
 
     const userQuantityRow = collectionRows.find(r => r.insect_id === spec.id);
@@ -96,6 +100,6 @@ export default {
       return message.reply('❌ FAILED to execute sell order.');
     }
 
-    return message.reply(`💰 **|** Successfully sold **${quantityToSell}x ${spec.name}** for **💰 ${totalReward}** coins!`);
+    return message.reply(`${icon} **|** Successfully sold **${quantityToSell}x ${spec.name}** for **${icon} ${totalReward}** ${name}!`);
   }
 };
