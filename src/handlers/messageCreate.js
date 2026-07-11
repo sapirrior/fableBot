@@ -12,6 +12,8 @@ export function onMessageCreate(client, message) {
   // Ignore bots, webhooks, and Direct Messages
   if (message.author.bot || !message.guild) return;
 
+  console.log(`[Message] Received content from ${message.author.username}: "${message.content}"`);
+
   // Globally disable mention ping on message replies
   const originalReply = message.reply.bind(message);
   message.reply = function (options) {
