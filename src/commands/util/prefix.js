@@ -29,7 +29,7 @@ export default {
     // Display current prefix
     if (!args.length) {
       const currentPrefix = configManager.get('prefix');
-      return ctx.sender.reply(message, settingEmoji, `, the current prefix is set to **\`${currentPrefix}\`**!`);
+      return ctx.sender.reply(message, settingEmoji, `, current prefix is \`${currentPrefix}\``);
     }
 
     // Must have Manage Guild or Manage Channels permissions
