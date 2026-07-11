@@ -1,5 +1,5 @@
 {
-  "prefix": "f!",
+  "prefix": ".",
   "embedColor": "#2f3136",
   "cooldownSweepIntervalMs": 300000,
   "dailyCooldownMs": 79200000,

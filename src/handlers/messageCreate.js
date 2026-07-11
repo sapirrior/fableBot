@@ -12,14 +12,44 @@ export function onMessageCreate(client, message) {
   // Ignore bots and webhooks
   if (message.author.bot) return;
 
-  const content = message.content;
+  const content = message.content.trim();
   const prefix = config.prefix;
+  const mentionPrefix = `<@${client.user.id}>`;
+  const mentionNickPrefix = `<@!${client.user.id}>`;
 
-  // Check prefix
-  if (!content.startsWith(prefix)) return;
+  let commandText = '';
+
+  const isDM = !message.guild;
+
+  // Resolve prefix / triggers
+  if (isDM) {
+    // In DMs, support prefix-less execution, explicit prefix, or mentions
+    if (content.startsWith(prefix)) {
+      commandText = content.slice(prefix.length).trim();
+    } else if (content.startsWith(mentionPrefix)) {
+      commandText = content.slice(mentionPrefix.length).trim();
+    } else if (content.startsWith(mentionNickPrefix)) {
+      commandText = content.slice(mentionNickPrefix.length).trim();
+    } else {
+      commandText = content; // Implicit command in DMs
+    }
+  } else {
+    // In servers, require either the prefix or a direct bot mention
+    if (content.startsWith(prefix)) {
+      commandText = content.slice(prefix.length).trim();
+    } else if (content.startsWith(mentionPrefix)) {
+      commandText = content.slice(mentionPrefix.length).trim();
+    } else if (content.startsWith(mentionNickPrefix)) {
+      commandText = content.slice(mentionNickPrefix.length).trim();
+    } else {
+      return; // Not a command
+    }
+  }
+
+  if (!commandText) return;
 
   // Parse command name and args
-  const args = content.slice(prefix.length).trim().split(/ +/g);
+  const args = commandText.split(/ +/g);
   const commandName = args.shift().toLowerCase();
 
   // Look up command
