@@ -1,5 +1,5 @@
 {
-  "prefix": "ah",
+  "prefix": "sudo",
   "embedColors": {
     "brand": "#5865F2",
     "success": "#57F287",
@@ -12,5 +12,5 @@
   "dailyRewardCoins": 250,
   "catchCooldownMs": 10000,
   "currencyName": "⌬",
-  "statusMessage": "with ? butterflies"
+  "statusMessage": "? butterflies"
 }
