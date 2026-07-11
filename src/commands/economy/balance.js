@@ -15,9 +15,9 @@ export default {
     const name = ctx.config.currencyName;
 
     if (target.id === message.author.id) {
-      return message.reply(`${icon} You currently have **${balance}** ${name}.`);
+      return message.reply(`💵 **|** You currently have **${icon} ${balance}** ${name}.`);
     } else {
-      return message.reply(`${icon} **${target.username}** currently has **${balance}** ${name}.`);
+      return message.reply(`💵 **|** **${target.username}** currently has **${icon} ${balance}** ${name}.`);
     }
   }
 };
