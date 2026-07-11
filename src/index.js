@@ -32,8 +32,7 @@ const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent,
-    GatewayIntentBits.DirectMessages
+    GatewayIntentBits.MessageContent
   ],
   makeCache: Options.cacheWithLimits({
     MessageManager: 10,

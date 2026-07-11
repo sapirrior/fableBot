@@ -9,8 +9,8 @@ const config = JSON.parse(readFileSync(resolve('./src/configs/config.json'), 'ut
 const insets = JSON.parse(readFileSync(resolve('./src/configs/insets.json'), 'utf8'));
 
 export function onMessageCreate(client, message) {
-  // Ignore bots and webhooks
-  if (message.author.bot) return;
+  // Ignore bots, webhooks, and Direct Messages
+  if (message.author.bot || !message.guild) return;
 
   const content = message.content.trim();
   const prefix = config.prefix;
@@ -19,31 +19,15 @@ export function onMessageCreate(client, message) {
 
   let commandText = '';
 
-  const isDM = !message.guild;
-
-  // Resolve prefix / triggers
-  if (isDM) {
-    // In DMs, support prefix-less execution, explicit prefix, or mentions
-    if (content.startsWith(prefix)) {
-      commandText = content.slice(prefix.length).trim();
-    } else if (content.startsWith(mentionPrefix)) {
-      commandText = content.slice(mentionPrefix.length).trim();
-    } else if (content.startsWith(mentionNickPrefix)) {
-      commandText = content.slice(mentionNickPrefix.length).trim();
-    } else {
-      commandText = content; // Implicit command in DMs
-    }
+  // Resolve prefix / triggers (require prefix or direct bot mention)
+  if (content.startsWith(prefix)) {
+    commandText = content.slice(prefix.length).trim();
+  } else if (content.startsWith(mentionPrefix)) {
+    commandText = content.slice(mentionPrefix.length).trim();
+  } else if (content.startsWith(mentionNickPrefix)) {
+    commandText = content.slice(mentionNickPrefix.length).trim();
   } else {
-    // In servers, require either the prefix or a direct bot mention
-    if (content.startsWith(prefix)) {
-      commandText = content.slice(prefix.length).trim();
-    } else if (content.startsWith(mentionPrefix)) {
-      commandText = content.slice(mentionPrefix.length).trim();
-    } else if (content.startsWith(mentionNickPrefix)) {
-      commandText = content.slice(mentionNickPrefix.length).trim();
-    } else {
-      return; // Not a command
-    }
+    return; // Not a command
   }
 
   if (!commandText) return;
