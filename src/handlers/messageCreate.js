@@ -12,7 +12,6 @@ export function onMessageCreate(client, message) {
   // Ignore bots, webhooks, and Direct Messages
   if (message.author.bot || !message.guild) return;
 
-  console.log(`[Message] Received content from ${message.author.username}: "${message.content}"`);
 
   // Globally disable mention ping on message replies
   const originalReply = message.reply.bind(message);
@@ -36,7 +35,6 @@ export function onMessageCreate(client, message) {
   const lowerContent = content.toLowerCase();
   const lowerPrefix = prefix.toLowerCase();
 
-  console.log(`[Debug] Checking content triggers. content: "${content}", lowerPrefix: "${lowerPrefix}", mentionPrefix: "${mentionPrefix}", mentionNickPrefix: "${mentionNickPrefix}"`);
 
   // Resolve prefix / triggers (require prefix or direct bot mention)
   if (lowerContent.startsWith(lowerPrefix)) {
@@ -55,16 +53,11 @@ export function onMessageCreate(client, message) {
   const args = commandText.split(/ +/g);
   const commandName = args.shift().toLowerCase();
 
-  console.log(`[Debug] Resolved commandText: "${commandText}", commandName: "${commandName}"`);
 
   // Look up command
   const cmd = registry.get(commandName);
-  if (!cmd) {
-    console.log(`[Debug] Command not found in registry: "${commandName}"`);
-    return;
-  }
+  if (!cmd) return;
 
-  console.log(`[Debug] Found command "${cmd.name}". Executing...`);
 
   // Ensure user exists in database (upsertUser)
   try {
