@@ -25,7 +25,7 @@ export default {
       title: `${target.username}'s Profile`,
       thumbnail: { url: target.displayAvatarURL() },
       fields: [
-        { name: `${ctx.config.currencyIcon} ${ctx.config.currencyName}`, value: `**${balance}**`, inline: true },
+        { name: ctx.config.currencyName, value: `**${balance}**`, inline: true },
         { name: '⭐ Level', value: `**${level}**`, inline: true },
         { name: '✨ Experience', value: `\`${xp} / ${xpNeeded} XP\``, inline: true },
         { name: '🪲 Insect Collection', value: `Total: **${totalInsectsCaught}** (Unique: **${uniqueInsectsCaught}/20**)`, inline: false }

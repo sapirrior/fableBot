@@ -11,13 +11,12 @@ export default {
     const row = ctx.query('getUser').get(target.id);
     const balance = row ? row.balance : 0;
 
-    const icon = ctx.config.currencyIcon;
     const name = ctx.config.currencyName;
 
     if (target.id === message.author.id) {
-      return message.reply(`💵 **|** You currently have **${icon} ${balance}** ${name}.`);
+      return message.reply(`💵 **|** You currently have **${balance}** ${name}.`);
     } else {
-      return message.reply(`💵 **|** **${target.username}** currently has **${icon} ${balance}** ${name}.`);
+      return message.reply(`💵 **|** **${target.username}** currently has **${balance}** ${name}.`);
     }
   }
 };

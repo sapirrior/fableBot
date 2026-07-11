@@ -5,7 +5,6 @@ export default {
   description: 'View the leaderboard for Fable or collection size.',
   async execute(client, message, args, ctx) {
     const type = (args[0] || '').toLowerCase();
-    const icon = ctx.config.currencyIcon;
     const name = ctx.config.currencyName;
 
     if (type === 'collection' || type === 'insects' || type === 'col') {
@@ -52,7 +51,7 @@ export default {
         } catch {
           userTag = `Unknown User (${row.user_id})`;
         }
-        description += `${i + 1}. **${userTag}** — **${icon} ${row.balance}** ${name}\n`;
+        description += `${i + 1}. **${userTag}** — **${row.balance}** ${name}\n`;
       }
 
       const embed = {

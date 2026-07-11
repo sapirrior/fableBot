@@ -6,7 +6,6 @@ export default {
   cooldown: 5000,
   description: 'Transfer currency to another user.',
   async execute(client, message, args, ctx) {
-    const icon = ctx.config.currencyIcon;
     const name = ctx.config.currencyName;
     const prefix = ctx.config.prefix;
 
@@ -33,7 +32,7 @@ export default {
     const authorBalance = authorRow ? authorRow.balance : 0;
 
     if (authorBalance < amount) {
-      return message.reply(`❌ You do not have enough ${name}! You only have **${icon} ${authorBalance}** ${name}.`);
+      return message.reply(`❌ You do not have enough ${name}! You only have **${authorBalance}** ${name}.`);
     }
 
     // Perform transfer within database transaction
@@ -51,6 +50,6 @@ export default {
       return message.reply('❌ Database transaction failed. Transfer aborted.');
     }
 
-    return message.reply(`💸 **|** Successfully transferred **${icon} ${amount}** ${name} to **${target.username}**!`);
+    return message.reply(`💸 **|** Successfully transferred **${amount}** ${name} to **${target.username}**!`);
   }
 };

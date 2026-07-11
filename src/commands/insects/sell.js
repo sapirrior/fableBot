@@ -5,7 +5,6 @@ export default {
   cooldown: 3000,
   description: 'Sell caught insects for currency.',
   async execute(client, message, args, ctx) {
-    const icon = ctx.config.currencyIcon;
     const name = ctx.config.currencyName;
     const prefix = ctx.config.prefix;
 
@@ -48,7 +47,7 @@ export default {
         return message.reply('❌ FAILED to sell insects due to a database error.');
       }
 
-      return message.reply(`💵 **|** Successfully sold **${totalSold}** insects for **${icon} ${totalCoinsGained}** ${name}!`);
+      return message.reply(`💵 **|** Successfully sold **${totalSold}** insects for **${totalCoinsGained}** ${name}!`);
     }
 
     // Option 2: Sell specific insect
@@ -100,6 +99,6 @@ export default {
       return message.reply('❌ FAILED to execute sell order.');
     }
 
-    return message.reply(`💵 **|** Successfully sold **${quantityToSell}x ${spec.name}** for **${icon} ${totalReward}** ${name}!`);
+    return message.reply(`💵 **|** Successfully sold **${quantityToSell}x ${spec.name}** for **${totalReward}** ${name}!`);
   }
 };
