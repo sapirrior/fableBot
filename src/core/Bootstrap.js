@@ -77,5 +77,14 @@ export async function bootstrap() {
   // 7. Load and register events
   await loadEvents(client);
 
+  // 8. Connect to Discord Gateway
+  try {
+    await client.login(process.env.DISCORD_TOKEN);
+  } catch (err) {
+    logger.error('Login failed:', err, 'Discord');
+    closeDb();
+    process.exit(1);
+  }
+
   return client;
 }
