@@ -41,7 +41,7 @@ export default {
       .map(({ name, value }) => ({ name, value, inline: false }));
 
     const embedData = {
-      description: `Here is the list of commands!\n\nFor more info on a specific command, use \`${prefix} cmd {command}\``,
+      description: `Here is the list of commands!\n\nFor more info on a specific command,\n\nuse \`${prefix} cmd {command}\``,
       color: ctx.constants.RARITY_COLORS.rare,
       author: {
         name: 'Command List',
