@@ -11,8 +11,8 @@ export default {
     const collectionRows = ctx.query('getCollection').all(target.id);
     if (collectionRows.length === 0) {
       const resp = target.id === message.author.id
-        ? `[❌] **${author}** :: Query empty!\n> Your collection is empty! Start catching using \`${ctx.config.prefix}catch\`.`
-        : `[❌] **${author}** :: Query empty!\n> **${target.username}** has no insects in their collection yet.`;
+        ? `❌ **::** **${author}**, Query empty!\n> Your collection is empty! Start catching using \`${ctx.config.prefix}catch\`.`
+        : `❌ **::** **${author}**, Query empty!\n> **${target.username}** has no insects in their collection yet.`;
       return message.reply(resp);
     }
 
@@ -27,7 +27,7 @@ export default {
 
     const embed = {
       color: parseInt(ctx.config.embedColor.replace('#', ''), 16),
-      title: `[📖] ${target.username}'s Colony Collection`,
+      title: `📖 **::** ${target.username}'s Colony Collection`,
       description: `==================================\n${description}`,
       timestamp: new Date()
     };

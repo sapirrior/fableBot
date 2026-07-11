@@ -20,7 +20,7 @@ export default {
     // Level formula
     const xpNeeded = 100 + level * 50;
 
-    const content = `[⌬] **${target.username}**'s Colony Profile\n==================================\nLevel: **${level}**\nExperience: \`${xp} / ${xpNeeded} XP\`\nColony Balance: **${balance}** ${ctx.config.currencyName}\nCollection size: **${totalInsectsCaught}** insects (\`${uniqueInsectsCaught}/20\` unique)`;
+    const content = `⌬ **::** **${target.username}**'s Colony Profile\n==================================\nLevel: **${level}**\nExperience: \`${xp} / ${xpNeeded} XP\`\nColony Balance: **${balance}** ${ctx.config.currencyName}\nCollection size: **${totalInsectsCaught}** insects (\`${uniqueInsectsCaught}/20\` unique)`;
 
     return message.reply(content);
   }

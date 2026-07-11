@@ -12,7 +12,7 @@ export default {
       // Top collections
       const rows = ctx.query('getTopCollection').all(10);
       if (rows.length === 0) {
-        return message.reply(`[❌] **${author}** :: Query empty!\n> The collection leaderboard is empty.`);
+        return message.reply(`❌ **::** **${author}**, Query empty!\n> The collection leaderboard is empty.`);
       }
 
       let description = '';
@@ -30,7 +30,7 @@ export default {
 
       const embed = {
         color: parseInt(ctx.config.embedColor.replace('#', ''), 16),
-        title: '🏆 Fable Leaderboard - Top Collectors',
+        title: '🏆 **::** Fable Leaderboard - Top Collectors',
         description: `==================================\n${description}`,
         timestamp: new Date()
       };
@@ -39,7 +39,7 @@ export default {
       // Top balances (default)
       const rows = ctx.query('getTopBalance').all(10);
       if (rows.length === 0) {
-        return message.reply(`[❌] **${author}** :: Query empty!\n> The ${name} leaderboard is empty.`);
+        return message.reply(`❌ **::** **${author}**, Query empty!\n> The ${name} leaderboard is empty.`);
       }
 
       let description = '';
@@ -57,7 +57,7 @@ export default {
 
       const embed = {
         color: parseInt(ctx.config.embedColor.replace('#', ''), 16),
-        title: `🏆 Fable Leaderboard - Richest Users`,
+        title: `🏆 **::** Fable Leaderboard - Richest Users`,
         description: `==================================\n${description}`,
         timestamp: new Date()
       };

@@ -65,10 +65,10 @@ export default {
       });
     } catch (dbError) {
       console.error('[DatabaseSync] Catch transaction failed:', dbError);
-      return message.reply(`[❌] **${author}** :: Database transaction failed.\n> Failed to record your catch.`);
+      return message.reply(`❌ **::** **${author}**, Database transaction failed.\n> Failed to record your catch.`);
     }
 
-    let response = `[⌬] **${author}** :: Caught a \`${selected.id}\` ${selected.emoji}!\n> Experience generated: **+${xpGained} XP**`;
+    let response = `⌬ **::** **${author}** went hunting in the colony and caught a \`${selected.id}\` ${selected.emoji}!\n> **+${xpGained} XP** generated!`;
     if (leveledUp) {
       response += `\n> Level up: reached Level **${newLevel}**! 🎉`;
     }
