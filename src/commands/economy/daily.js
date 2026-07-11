@@ -3,6 +3,9 @@ export default {
   aliases: ['d'],
   cooldown: 2000,
   description: 'Claim your daily coin reward.',
+  args: '',
+  example: ['fab daily'],
+  related: ['fab balance'],
   async execute(client, message, args, ctx) {
     const userId = message.author.id;
     const now = Date.now();

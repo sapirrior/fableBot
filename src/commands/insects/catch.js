@@ -4,7 +4,10 @@ export default {
   name: 'catch',
   aliases: ['c', 'hunt'],
   cooldown: 10000, // 10 seconds (loaded from config)
-  description: 'Catch a random insect in the wild.',
+  description: 'Catch a random insect in the wild to collect it and gain experience.',
+  args: '',
+  example: ['fab catch'],
+  related: ['fab collection', 'fab sell'],
   async execute(client, message, args, ctx) {
     const userId = message.author.id;
     const insects = ctx.insets;

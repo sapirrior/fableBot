@@ -2,6 +2,9 @@ export default {
   name: 'ping',
   cooldown: 2000,
   description: 'Check bot API latency.',
+  args: '',
+  example: ['fab ping'],
+  related: [],
   async execute(client, message, args, ctx) {
     const sent = await message.reply('🏓 Pinging...');
     const latency = sent.createdTimestamp - message.createdTimestamp;
