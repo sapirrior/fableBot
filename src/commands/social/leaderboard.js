@@ -2,16 +2,17 @@ export default {
   name: 'leaderboard',
   aliases: ['lb', 'top'],
   cooldown: 5000,
-  description: 'View the leaderboard for Fable or collection size.',
+  description: 'View the leaderboard for Fables or collection size.',
   async execute(client, message, args, ctx) {
     const type = (args[0] || '').toLowerCase();
     const name = ctx.config.currencyName;
+    const author = message.author.username;
 
     if (type === 'collection' || type === 'insects' || type === 'col') {
       // Top collections
       const rows = ctx.query('getTopCollection').all(10);
       if (rows.length === 0) {
-        return message.reply('🪹 The collection leaderboard is empty.');
+        return message.reply(`[❌] **${author}** :: Query empty!\n> The collection leaderboard is empty.`);
       }
 
       let description = '';
@@ -24,13 +25,13 @@ export default {
         } catch {
           userTag = `Unknown User (${row.user_id})`;
         }
-        description += `${i + 1}. **${userTag}** — **${row.total}** insects\n`;
+        description += `> ${i + 1}. **${userTag}** :: **${row.total}** insects\n`;
       }
 
       const embed = {
         color: parseInt(ctx.config.embedColor.replace('#', ''), 16),
         title: '🏆 Fable Leaderboard - Top Collectors',
-        description,
+        description: `==================================\n${description}`,
         timestamp: new Date()
       };
       return message.reply({ embeds: [embed] });
@@ -38,7 +39,7 @@ export default {
       // Top balances (default)
       const rows = ctx.query('getTopBalance').all(10);
       if (rows.length === 0) {
-        return message.reply(`🪹 The ${name} leaderboard is empty.`);
+        return message.reply(`[❌] **${author}** :: Query empty!\n> The ${name} leaderboard is empty.`);
       }
 
       let description = '';
@@ -51,13 +52,13 @@ export default {
         } catch {
           userTag = `Unknown User (${row.user_id})`;
         }
-        description += `${i + 1}. **${userTag}** — **${row.balance}** ${name}\n`;
+        description += `> ${i + 1}. **${userTag}** :: **${row.balance}** ${name}\n`;
       }
 
       const embed = {
         color: parseInt(ctx.config.embedColor.replace('#', ''), 16),
         title: `🏆 Fable Leaderboard - Richest Users`,
-        description,
+        description: `==================================\n${description}`,
         timestamp: new Date()
       };
       return message.reply({ embeds: [embed] });

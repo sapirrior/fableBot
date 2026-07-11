@@ -10,6 +10,7 @@ export default {
   related: ['fab collection', 'fab sell'],
   async execute(client, message, args, ctx) {
     const userId = message.author.id;
+    const author = message.author.username;
     const insects = ctx.insets;
 
     // 1. Calculate weighted pool
@@ -21,7 +22,7 @@ export default {
     }
 
     if (pool.length === 0) {
-      return message.reply('❌ No insects found in the config file.');
+      return message.reply(`[❌] **${author}** :: System error!\n> No insects found in the configuration.`);
     }
 
     // 2. Select random insect
@@ -64,12 +65,12 @@ export default {
       });
     } catch (dbError) {
       console.error('[DatabaseSync] Catch transaction failed:', dbError);
-      return message.reply('❌ Failed to record your catch in the database.');
+      return message.reply(`[❌] **${author}** :: Database transaction failed.\n> Failed to record your catch.`);
     }
 
-    let response = `🕸️ **| ${message.author.username}** went hunting and caught a **${selected.name}** ${selected.emoji}! \`[${selected.rarity.toUpperCase()}]\` (+${xpGained} XP)`;
+    let response = `[⌬] **${author}** :: Caught a \`${selected.id}\` ${selected.emoji}!\n> Experience generated: **+${xpGained} XP**`;
     if (leveledUp) {
-      response += `\n🎉 **LEVEL UP!** You reached **Level ${newLevel}**!`;
+      response += `\n> Level up: reached Level **${newLevel}**! 🎉`;
     }
 
     return message.reply(response);

@@ -20,19 +20,8 @@ export default {
     // Level formula
     const xpNeeded = 100 + level * 50;
 
-    const embed = {
-      color: parseInt(ctx.config.embedColor.replace('#', ''), 16),
-      title: `${target.username}'s Profile`,
-      thumbnail: { url: target.displayAvatarURL() },
-      fields: [
-        { name: ctx.config.currencyName, value: `**${balance}**`, inline: true },
-        { name: '⭐ Level', value: `**${level}**`, inline: true },
-        { name: '✨ Experience', value: `\`${xp} / ${xpNeeded} XP\``, inline: true },
-        { name: '🪲 Insect Collection', value: `Total: **${totalInsectsCaught}** (Unique: **${uniqueInsectsCaught}/20**)`, inline: false }
-      ],
-      timestamp: new Date()
-    };
+    const content = `[⌬] **${target.username}**'s Colony Profile\n==================================\nLevel: **${level}**\nExperience: \`${xp} / ${xpNeeded} XP\`\nColony Balance: **${balance}** ${ctx.config.currencyName}\nCollection size: **${totalInsectsCaught}** insects (\`${uniqueInsectsCaught}/20\` unique)`;
 
-    return message.reply({ embeds: [embed] });
+    return message.reply(content);
   }
 };

@@ -21,12 +21,12 @@ export default {
       const timeLeft = cooldownMs - timePassed;
       const hours = Math.floor(timeLeft / (3600 * 1000));
       const minutes = Math.floor((timeLeft % (3600 * 1000)) / (60 * 1000));
-      return message.reply(`📆 You have already claimed your daily reward today! Next claim available in **${hours}h ${minutes}m**.`);
+      return message.reply(`[⏳] **${message.author.username}** :: Node daily lock active!\n> Next claim available in **${hours}h ${minutes}m**.`);
     }
 
     // Award daily reward
     ctx.query('claimDaily').run(reward, now, userId);
 
-    return message.reply(`📆 **|** You claimed your daily reward and received **${reward}** ${ctx.config.currencyName}!`);
+    return message.reply(`[📆] **${message.author.username}** :: Daily reward claimed successfully!\n> Received: **${reward}** ${ctx.config.currencyName}`);
   }
 };
