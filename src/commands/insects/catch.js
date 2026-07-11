@@ -1,78 +1,57 @@
-import { transaction } from '../../db/index.js';
-
 export default {
   name: 'catch',
   aliases: ['c', 'hunt'],
-  cooldown: 10000, // 10 seconds (loaded from config)
-  description: 'Catch a random insect in the wild to collect it and gain experience.',
-  args: '',
-  example: ['fab catch'],
-  related: ['fab collection', 'fab sell'],
+  cooldown: 10000,
+  description: 'Hunt for insects in the wild! Rarer insects give more XP.',
   async execute(client, message, args, ctx) {
     const userId = message.author.id;
-    const author = message.author.username;
-    const insects = ctx.insets;
+    const { insets } = ctx;
 
-    // 1. Calculate weighted pool
+    // Build weighted pool
     const pool = [];
-    for (const insect of insects) {
-      for (let i = 0; i < insect.weight; i++) {
-        pool.push(insect);
-      }
+    for (const insect of insets) {
+      for (let i = 0; i < insect.weight; i++) pool.push(insect);
     }
-
     if (pool.length === 0) {
-      return message.reply(`**❌ ● ${author}**, System error!\n> No insects found in the configuration.`);
+      return ctx.sender.error(message, ', no insects are configured! Tell the admin!');
     }
 
-    // 2. Select random insect
     const selected = pool[Math.floor(Math.random() * pool.length)];
 
-    // XP gained based on rarity
-    let xpGained = 15;
-    if (selected.rarity === 'uncommon') xpGained = 25;
-    else if (selected.rarity === 'rare') xpGained = 50;
-    else if (selected.rarity === 'epic') xpGained = 100;
-    else if (selected.rarity === 'legendary') xpGained = 250;
+    // XP by rarity
+    const XP_MAP = { common: 15, uncommon: 25, rare: 50, epic: 100, legendary: 250 };
+    const xpGained = XP_MAP[selected.rarity] ?? 15;
 
     let leveledUp = false;
     let newLevel = 1;
 
     try {
-      transaction(() => {
-        // Record insect in collection
+      ctx.transaction(() => {
         ctx.query('catchInsect').run(userId, selected.id);
 
-        // Fetch user data
         const userRow = ctx.query('getUser').get(userId);
-        let xp = userRow.xp + xpGained;
-        let level = userRow.level;
+        let xp = (userRow?.xp ?? 0) + xpGained;
+        let level = userRow?.level ?? 1;
 
-        // Check level up
         let xpNeeded = 100 + level * 50;
-        if (xp >= xpNeeded) {
-          while (xp >= xpNeeded) {
-            xp -= xpNeeded;
-            level++;
-            xpNeeded = 100 + level * 50;
-          }
+        while (xp >= xpNeeded) {
+          xp -= xpNeeded;
+          level++;
+          xpNeeded = 100 + level * 50;
           leveledUp = true;
-          newLevel = level;
         }
-
-        // Save new xp and level
+        newLevel = level;
         ctx.query('updateUserXP').run(xp, level, userId);
       });
-    } catch (dbError) {
-      console.error('[DatabaseSync] Catch transaction failed:', dbError);
-      return message.reply(`**❌ ● ${author}**, Database transaction failed.\n> Failed to record your catch.`);
+    } catch (e) {
+      console.error('[catch] Transaction failed:', e);
+      return ctx.sender.error(message, ', something went wrong while catching! Try again.');
     }
 
-    let response = `**🌱 ● ${author}** went hunting in the colony and caught a \`${selected.id}\` ${selected.emoji}!\n> **+${xpGained} XP** generated!`;
-    if (leveledUp) {
-      response += `\n> Level up: reached Level **${newLevel}**! 🎉`;
-    }
+    const rarityLabel = ctx.constants.capitalize(selected.rarity);
+    let text = ` went hunting and caught a **${rarityLabel}** \`${selected.id}\` ${selected.emoji}!\n> ✨ **+${xpGained} XP** gained!`;
+    if (leveledUp) text += `\n> 🎉 Level up! Now **Level ${newLevel}**!`;
 
-    return message.reply(response);
+    return ctx.sender.reply(message, '🌿', text);
   }
 };

@@ -1,67 +1,54 @@
 export default {
   name: 'leaderboard',
-  aliases: ['lb', 'top'],
-  cooldown: 5000,
-  description: 'View the leaderboard for Fables or collection size.',
+  aliases: ['lb', 'top', 'rank'],
+  cooldown: 8000,
+  description: 'View the top 10 Fable collectors by balance or collection size.',
   async execute(client, message, args, ctx) {
-    const type = (args[0] || '').toLowerCase();
-    const name = ctx.config.currencyName;
-    const author = message.author.username;
+    const { currencyName, prefix } = ctx.config;
+    const mode = (args[0] || '').toLowerCase();
+    const isCollection = ['col', 'collection', 'insects', 'zoo'].includes(mode);
 
-    if (type === 'collection' || type === 'insects' || type === 'col') {
-      // Top collections
-      const rows = ctx.query('getTopCollection').all(10);
-      if (rows.length === 0) {
-        return message.reply(`**❌ ● ${author}**, Query empty!\n> The collection leaderboard is empty.`);
-      }
+    const rows = isCollection
+      ? ctx.query('getTopCollection').all(10)
+      : ctx.query('getTopBalance').all(10);
 
-      let description = '';
-      for (let i = 0; i < rows.length; i++) {
-        const row = rows[i];
-        let userTag = row.user_id;
-        try {
-          const user = await client.users.fetch(row.user_id);
-          userTag = user.username;
-        } catch {
-          userTag = `Unknown User (${row.user_id})`;
-        }
-        description += `> ${i + 1}. **${userTag}** :: **${row.total}** insects\n`;
-      }
-
-      const embed = {
-        color: parseInt(ctx.config.embedColor.replace('#', ''), 16),
-        title: '**🏆 ● Fable Leaderboard - Top Collectors**',
-        description: `==================================\n${description}`,
-        timestamp: new Date()
-      };
-      return message.reply({ embeds: [embed] });
-    } else {
-      // Top balances (default)
-      const rows = ctx.query('getTopBalance').all(10);
-      if (rows.length === 0) {
-        return message.reply(`**❌ ● ${author}**, Query empty!\n> The ${name} leaderboard is empty.`);
-      }
-
-      let description = '';
-      for (let i = 0; i < rows.length; i++) {
-        const row = rows[i];
-        let userTag = row.user_id;
-        try {
-          const user = await client.users.fetch(row.user_id);
-          userTag = user.username;
-        } catch {
-          userTag = `Unknown User (${row.user_id})`;
-        }
-        description += `> ${i + 1}. **${userTag}** :: **${row.balance}** ${name}\n`;
-      }
-
-      const embed = {
-        color: parseInt(ctx.config.embedColor.replace('#', ''), 16),
-        title: `**🏆 ● Fable Leaderboard - Richest Users**`,
-        description: `==================================\n${description}`,
-        timestamp: new Date()
-      };
-      return message.reply({ embeds: [embed] });
+    if (rows.length === 0) {
+      return ctx.sender.error(message, ', the leaderboard is empty! Start playing first!');
     }
+
+    // Resolve usernames
+    const medals = ['🥇', '🥈', '🥉'];
+    const lines = [];
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
+      let tag;
+      try {
+        const user = await client.users.fetch(row.user_id);
+        tag = user.username;
+      } catch {
+        tag = `Unknown (${row.user_id.slice(-4)})`;
+      }
+      const rank = medals[i] ?? `**${i + 1}.**`;
+      const value = isCollection
+        ? `**${ctx.fmt(row.total)}** insects`
+        : `**${ctx.fmt(row.balance)} ${currencyName}**`;
+      lines.push(`${rank} ${tag}  —  ${value}`);
+    }
+
+    const title = isCollection
+      ? '🏆 Fable Leaderboard — Top Collectors'
+      : `🏆 Fable Leaderboard — Richest Players`;
+
+    const footerHint = isCollection
+      ? `${prefix}lb fables for Fables ranking`
+      : `${prefix}lb collection for insect ranking`;
+
+    return ctx.sender.embed(message, {
+      title,
+      color: ctx.constants.RARITY_COLORS.legendary,
+      description: lines.join('\n'),
+      footer: { text: footerHint },
+      timestamp: new Date().toISOString(),
+    });
   }
 };

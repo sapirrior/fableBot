@@ -1,14 +1,14 @@
 export default {
   name: 'ping',
-  cooldown: 2000,
-  description: 'Check bot API latency.',
-  args: '',
-  example: ['fab ping'],
-  related: [],
+  aliases: ['pong'],
+  cooldown: 3000,
+  description: 'Check bot latency and Discord API ping.',
   async execute(client, message, args, ctx) {
-    const author = message.author.username;
-    const sent = await message.reply(`**🏓 ● ${author}**, Pinging...`);
+    // OwO ping format: 🏓 **|** ...pong! In 45ms
+    // Fable adapted:   🏓 **●** Pong! `45ms` · API `12ms`
+    const sent = await message.reply('🏓 **●** Pinging...');
     const latency = sent.createdTimestamp - message.createdTimestamp;
-    return sent.edit(`**🏓 ● ${author}**, Pong!\n> Latency: **${latency}ms**\n> API Latency: **${Math.round(client.ws.ping)}ms**`);
+    const apiPing = Math.round(client.ws.ping);
+    await sent.edit(`🏓 **●** Pong! \`${latency}ms\` · API \`${apiPing}ms\``);
   }
 };

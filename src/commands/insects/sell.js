@@ -1,105 +1,93 @@
-import { transaction } from '../../db/index.js';
-
 export default {
   name: 'sell',
+  aliases: ['s'],
   cooldown: 3000,
-  description: 'Sell caught insects for currency.',
+  description: 'Sell insects from your collection for Fables.',
   async execute(client, message, args, ctx) {
-    const name = ctx.config.currencyName;
-    const prefix = ctx.config.prefix;
-    const author = message.author.username;
+    const { currencyName, prefix } = ctx.config;
+    const userId = message.author.id;
 
     if (!args[0]) {
-      return message.reply(`**❌ ● ${author}**, Missing target identifier!\n> Please specify an insect to sell. Example: \`${prefix}sell ant 1\` or \`${prefix}sell all\``);
+      return ctx.sender.error(message, `, please specify what to sell!\n> \`${prefix}sell <insect|all> [amount]\``);
     }
 
-    const userId = message.author.id;
     const targetQuery = args[0].toLowerCase();
+    const rows = ctx.query('getCollection').all(userId);
 
-    // Fetch user's current collection
-    const collectionRows = ctx.query('getCollection').all(userId);
-    if (collectionRows.length === 0) {
-      return message.reply(`**❌ ● ${author}**, Transaction failed!\n> Your collection is empty! Nothing to sell.`);
+    if (rows.length === 0) {
+      return ctx.sender.error(message, ', your collection is empty!');
     }
 
-    // Option 1: Sell all
+    // --- Sell all ---
     if (targetQuery === 'all') {
-      let totalCoinsGained = 0;
+      let totalCoins = 0;
       let totalSold = 0;
 
       try {
-        transaction(() => {
-          for (const row of collectionRows) {
-            const spec = ctx.insets.find(i => i.id === row.insect_id);
-            if (spec) {
-              const coinsGained = spec.value * row.count;
-              totalCoinsGained += coinsGained;
-              totalSold += row.count;
-
-              // Remove from collection
-              ctx.query('removeInsect').run(userId, row.insect_id);
-            }
+        ctx.transaction(() => {
+          for (const row of rows) {
+            const spec = ctx.getInsect(row.insect_id);
+            if (!spec) continue;
+            totalCoins += spec.value * row.count;
+            totalSold += row.count;
+            ctx.query('removeInsect').run(userId, row.insect_id);
           }
-          // Update user balance
-          ctx.query('updateUserBalance').run(totalCoinsGained, userId);
+          ctx.query('updateUserBalance').run(totalCoins, userId);
         });
-      } catch (dbError) {
-        console.error('[DatabaseSync] Sell-all transaction failed:', dbError);
-        return message.reply(`**❌ ● ${author}**, Database transaction failed.\n> FAILED to sell insects due to a database error.`);
+      } catch (e) {
+        console.error('[sell] sell-all transaction failed:', e);
+        return ctx.sender.error(message, ', transaction failed! Please try again.');
       }
 
-      return message.reply(`**💵 ● ${author}**, Successfully sold **${totalSold}** insects!\n> ${name} generated: **+${totalCoinsGained} ${name}**`);
+      return ctx.sender.reply(message, '💵', `, sold **${totalSold} insects** for **+${ctx.fmt(totalCoins)} ${currencyName}**!`);
     }
 
-    // Option 2: Sell specific insect
-    const spec = ctx.insets.find(i => i.id === targetQuery || i.name.toLowerCase() === targetQuery);
+    // --- Sell specific insect ---
+    const spec = ctx.getInsect(targetQuery);
     if (!spec) {
-      return message.reply(`**❌ ● ${author}**, Unknown insect species: "${targetQuery}"!\n> Use \`${prefix}insectdex\` to view valid insects.`);
+      return ctx.sender.error(message, `, unknown insect \`${targetQuery}\`!\n> Use \`${prefix}dex\` to see all insects.`);
     }
 
-    const userQuantityRow = collectionRows.find(r => r.insect_id === spec.id);
-    if (!userQuantityRow || userQuantityRow.count <= 0) {
-      return message.reply(`**❌ ● ${author}**, Transaction failed!\n> You do not have any \`${spec.id}\` in your collection.`);
+    const row = rows.find(r => r.insect_id === spec.id);
+    if (!row || row.count <= 0) {
+      return ctx.sender.error(message, `, you don't have any \`${spec.id}\` to sell!`);
     }
 
-    // Determine quantity to sell
-    let quantityToSell = 1;
+    // Parse quantity
+    const parsed = ctx.parse.parseAmount(args[1] ?? undefined);
+    let qty = 1;
     if (args[1]) {
-      if (args[1].toLowerCase() === 'all') {
-        quantityToSell = userQuantityRow.count;
+      if (parsed.value === 'all') {
+        qty = row.count;
+      } else if (parsed.error) {
+        return ctx.sender.error(message, `, invalid quantity! Use a number or \`all\`.`);
       } else {
-        quantityToSell = parseInt(args[1]);
-        if (isNaN(quantityToSell) || quantityToSell <= 0) {
-          return message.reply(`**❌ ● ${author}**, Transaction failed!\n> Please specify a valid quantity to sell.`);
-        }
+        qty = parsed.value;
       }
     }
 
-    if (quantityToSell > userQuantityRow.count) {
-      return message.reply(`**❌ ● ${author}**, Transaction failed!\n> You only have **${userQuantityRow.count}** \`${spec.id}\`.`);
+    if (qty > row.count) {
+      return ctx.sender.error(message, `, you only have **${row.count}x** \`${spec.id}\`!`);
     }
 
-    const totalReward = spec.value * quantityToSell;
+    const reward = spec.value * qty;
 
     try {
-      transaction(() => {
-        if (quantityToSell === userQuantityRow.count) {
-          // Sell all of this insect - remove row
+      ctx.transaction(() => {
+        if (qty >= row.count) {
           ctx.query('removeInsect').run(userId, spec.id);
         } else {
-          // Decrement count in db
-          for (let i = 0; i < quantityToSell; i++) {
+          for (let i = 0; i < qty; i++) {
             ctx.query('decrementInsect').run(userId, spec.id);
           }
         }
-        // Add coins to balance
-        ctx.query('updateUserBalance').run(totalReward, userId);
+        ctx.query('updateUserBalance').run(reward, userId);
       });
-    } catch (dbError) {
-      console.error('[DatabaseSync] Sell transaction failed:', dbError);
-      return message.reply(`**❌ ● ${author}**, Database transaction failed.\n> FAILED to execute sell order.`);
+    } catch (e) {
+      console.error('[sell] transaction failed:', e);
+      return ctx.sender.error(message, ', transaction failed! Please try again.');
     }
 
-    return message.reply(`**💵 ● ${author}**, Successfully sold **${quantityToSell}x** \`${spec.id}\` ${spec.emoji}!\n> ${name} generated: **+${totalReward} ${name}**`);
+    return ctx.sender.reply(message, '💵', `, sold **${qty}x** \`${spec.id}\` ${spec.emoji} for **+${ctx.fmt(reward)} ${currencyName}**!`);
   }
 };

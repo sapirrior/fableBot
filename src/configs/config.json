@@ -1,6 +1,12 @@
 {
-  "prefix": "feb",
-  "embedColor": "#2f3136",
+  "prefix": "f!",
+  "embedColors": {
+    "brand":   "#5865F2",
+    "success": "#57F287",
+    "error":   "#ED4245",
+    "warn":    "#FEE75C",
+    "info":    "#00B0F4"
+  },
   "cooldownSweepIntervalMs": 300000,
   "dailyCooldownMs": 79200000,
   "dailyRewardCoins": 250,

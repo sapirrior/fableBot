@@ -2,9 +2,12 @@ import { readFileSync } from 'fs';
 import { resolve } from 'path';
 import { registry } from './commandHandler.js';
 import { checkCooldown } from '../util/cooldown.js';
-import { query } from '../db/index.js';
+import { query, transaction } from '../db/index.js';
+import * as sender from '../util/sender.js';
+import * as constants from '../util/constants.js';
+import * as parse from '../util/parse.js';
 
-// Read config files
+// Load static configs once at startup
 const config = JSON.parse(readFileSync(resolve('./src/configs/config.json'), 'utf8'));
 const insets = JSON.parse(readFileSync(resolve('./src/configs/insets.json'), 'utf8'));
 
@@ -12,8 +15,7 @@ export function onMessageCreate(client, message) {
   // Ignore bots, webhooks, and Direct Messages
   if (message.author.bot || !message.guild) return;
 
-
-  // Globally disable mention ping on message replies
+  // Patch reply() to globally suppress mention pings (allowedMentions)
   const originalReply = message.reply.bind(message);
   message.reply = function (options) {
     if (typeof options === 'string') {
@@ -31,12 +33,10 @@ export function onMessageCreate(client, message) {
   const mentionNickPrefix = `<@!${client.user.id}>`;
 
   let commandText = '';
-
   const lowerContent = content.toLowerCase();
   const lowerPrefix = prefix.toLowerCase();
 
-
-  // Resolve prefix / triggers (require prefix or direct bot mention)
+  // Resolve prefix or bot mention trigger
   if (lowerContent.startsWith(lowerPrefix)) {
     commandText = content.slice(prefix.length).trim();
   } else if (content.startsWith(mentionPrefix)) {
@@ -44,7 +44,7 @@ export function onMessageCreate(client, message) {
   } else if (content.startsWith(mentionNickPrefix)) {
     commandText = content.slice(mentionNickPrefix.length).trim();
   } else {
-    return; // Not a command
+    return;
   }
 
   if (!commandText) return;
@@ -53,38 +53,47 @@ export function onMessageCreate(client, message) {
   const args = commandText.split(/ +/g);
   const commandName = args.shift().toLowerCase();
 
-
   // Look up command
   const cmd = registry.get(commandName);
   if (!cmd) return;
 
-
-  // Ensure user exists in database (upsertUser)
+  // Ensure user exists in database
   try {
     query('upsertUser').run(message.author.id);
-  } catch (dbError) {
-    console.error(`[DatabaseSync] Failed to upsert user ${message.author.id}:`, dbError);
+  } catch (e) {
+    console.error(`[DB] Failed to upsert user ${message.author.id}:`, e);
     return;
   }
 
-  // Cooldown check (default to 3000ms if not defined)
+  // Cooldown check
   const cooldownMs = cmd.cooldown ?? 3000;
   const cooldownLeft = checkCooldown(message.author.id, cmd.name, cooldownMs);
   if (cooldownLeft > 0) {
-    message.reply(`**⏳ ● ${message.author.username}**, System throttle active!\n> Please wait **${(cooldownLeft / 1000).toFixed(1)}s** before querying this node again.`);
+    const waitSec = (cooldownLeft / 1000).toFixed(1);
+    message.reply(`⏳ **● ${message.author.username}**, slow down! Wait **${waitSec}s** for \`${cmd.name}\`.`)
+      .then(msg => setTimeout(() => msg.delete().catch(() => {}), 4000))
+      .catch(() => {});
     return;
   }
 
-  // Context bundle
+  // Build rich context bundle passed to every command
   const ctx = {
     config,
     insets,
-    query
+    query,
+    transaction,
+    sender,
+    constants,
+    parse,
+    fmt: (n) => Number(n).toLocaleString('en-US'),
+    getInsect: (id) => insets.find(i =>
+      i.id === id.toLowerCase() || i.name.toLowerCase() === id.toLowerCase()
+    ),
   };
 
-  // Execute command safely
+  // Execute command with structured error recovery
   cmd.execute(client, message, args, ctx).catch((err) => {
-    console.error(`[CommandHandler] Error executing command "${cmd.name}":`, err);
-    message.reply('❌ An error occurred while executing that command.');
+    console.error(`[${cmd.name}] Unhandled error:`, err);
+    sender.error(message, ', something went wrong! Please try again.');
   });
 }

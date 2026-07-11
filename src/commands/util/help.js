@@ -1,73 +1,64 @@
-import { registry } from '../../handlers/commandHandler.js';
-
 export default {
   name: 'help',
-  aliases: ['h'],
-  cooldown: 2000,
-  description: 'This displays the commands or more info on a specific command',
-  args: '[command]',
-  example: ['fab help catch', 'fab help'],
-  related: [],
+  aliases: ['h', 'commands', 'cmds'],
+  cooldown: 3000,
+  description: 'List all Fable commands, or get detailed info on a specific one.',
   async execute(client, message, args, ctx) {
-    const prefix = ctx.config.prefix;
+    const { prefix } = ctx.config;
 
+    // --- Specific command lookup ---
     if (args[0]) {
-      const commandName = args[0].toLowerCase();
-      const cmd = registry.get(commandName);
+      const { registry } = await import('../../handlers/commandHandler.js');
+      const cmd = registry.get(args[0].toLowerCase());
       if (!cmd) {
-        return message.reply('**🚫 |** Could not find that command :c');
+        return ctx.sender.error(message, `, unknown command \`${args[0]}\`!\n> Use \`${prefix}help\` to see all commands.`);
       }
-
-      let title = `< ${prefix} ${cmd.name} `;
-      if (cmd.args) title += cmd.args + ' >';
-      else title += '>';
-
-      let aliasSection = '';
-      if (cmd.aliases && cmd.aliases.length > 0) {
-        aliasSection = `\n# Aliases\n${cmd.aliases.join(' , ')}`;
-      }
-
-      const descSection = `\n# Description\n${cmd.description || 'No description'}`;
-
-      let exampleSection = '';
-      if (cmd.example && cmd.example.length > 0) {
-        exampleSection = `\n# Example Command(s)\n${cmd.example.join(' , ')}`;
-      }
-
-      let relatedSection = '';
-      if (cmd.related && cmd.related.length > 0) {
-        relatedSection = `\n# Related Command(s)\n${cmd.related.join(' , ')}`;
-      }
-
-      const text = `\`\`\`md\n${title}\`\`\`\`\`\`md${aliasSection}${descSection}${exampleSection}${relatedSection}\`\`\`\`\`\`md\n> Remove brackets when typing commands\n> [] = optional arguments\n> {} = optional user input\`\`\``;
-
-      return message.reply(text);
+      const aliases = cmd.aliases?.length ? cmd.aliases.map(a => `\`${a}\``).join(', ') : 'none';
+      const cooldownSec = ((cmd.cooldown ?? 3000) / 1000).toFixed(0);
+      return ctx.sender.embed(message, {
+        author: { name: `📖 ${prefix}${cmd.name}` },
+        color: ctx.constants.RARITY_COLORS.rare,
+        description: cmd.description ?? 'No description.',
+        fields: [
+          { name: 'Aliases',   value: aliases,           inline: true },
+          { name: 'Cooldown',  value: `${cooldownSec}s`, inline: true },
+        ],
+        footer: { text: `${prefix}help to view all commands` },
+      });
     }
 
-    const embed = {
-      description: `Here is the list of commands!\nThe prefix is \`${prefix}\`\nFor more info on a specific command, use \`${prefix}help {command}\``,
-      color: parseInt(ctx.config.embedColor.replace('#', ''), 16),
-      author: { name: 'Fable Command List', icon_url: message.author.displayAvatarURL() },
+    // --- Full command list ---
+    return ctx.sender.embed(message, {
+      author: {
+        name: '📖 Fable — Command Help',
+        icon_url: client.user.displayAvatarURL({ size: 64 }),
+      },
+      color: ctx.constants.RARITY_COLORS.rare,
+      description: `Use \`${prefix}help <command>\` for detailed info on any command.`,
       fields: [
         {
-          name: '💰 Economy',
-          value: '`balance`  `daily`  `give`'
+          name: '🌿 Colony',
+          value: `\`catch\`  \`collection\`  \`release\`  \`insectdex\``,
+          inline: false,
         },
         {
-          name: '🌱 Insects',
-          value: '`catch`  `collection`  `insectdex`  `sell`  `release`'
+          name: '💵 Economy',
+          value: `\`balance\`  \`daily\`  \`give\``,
+          inline: false,
         },
         {
-          name: '🎭 Social',
-          value: '`profile`  `leaderboard`'
+          name: '🏆 Social',
+          value: `\`profile\`  \`leaderboard\``,
+          inline: false,
         },
         {
           name: '🔧 Utility',
-          value: '`ping`  `help`'
-        }
-      ]
-    };
-
-    return message.reply({ embeds: [embed] });
+          value: `\`ping\`  \`help\``,
+          inline: false,
+        },
+      ],
+      footer: { text: `Prefix: ${prefix}  ·  ${prefix}help <command> for details` },
+      timestamp: new Date().toISOString(),
+    });
   }
 };
