@@ -17,7 +17,7 @@ if (!process.env.DISCORD_TOKEN) {
 }
 
 // Bootstrap Database
-initDb('./fable_data.db');
+initDb();
 console.log('[Database] Initialized SQLite database (STRICT tables).');
 
 // Start Cooldown Sweeper

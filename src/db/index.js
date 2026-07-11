@@ -1,11 +1,13 @@
 import { DatabaseSync } from 'node:sqlite';
-import { resolve } from 'path';
+import { resolve, dirname } from 'path';
+import { mkdirSync } from 'fs';
 
 let db;
 const stmts = new Map();
 
-export function initDb(dbPath = './fable_data.db') {
+export function initDb(dbPath = './src/db/database/fable_data.db') {
   const absolutePath = resolve(dbPath);
+  mkdirSync(dirname(absolutePath), { recursive: true });
   db = new DatabaseSync(absolutePath);
 
   // Set WAL mode and performance pragmas
