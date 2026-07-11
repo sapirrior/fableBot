@@ -48,7 +48,7 @@ export default {
         return message.reply('❌ FAILED to sell insects due to a database error.');
       }
 
-      return message.reply(`${icon} **|** Successfully sold **${totalSold}** insects for **${icon} ${totalCoinsGained}** ${name}!`);
+      return message.reply(`💵 **|** Successfully sold **${totalSold}** insects for **${icon} ${totalCoinsGained}** ${name}!`);
     }
 
     // Option 2: Sell specific insect
@@ -100,6 +100,6 @@ export default {
       return message.reply('❌ FAILED to execute sell order.');
     }
 
-    return message.reply(`${icon} **|** Successfully sold **${quantityToSell}x ${spec.name}** for **${icon} ${totalReward}** ${name}!`);
+    return message.reply(`💵 **|** Successfully sold **${quantityToSell}x ${spec.name}** for **${icon} ${totalReward}** ${name}!`);
   }
 };
