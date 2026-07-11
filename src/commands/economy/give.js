@@ -12,20 +12,20 @@ export default {
 
     const target = message.mentions.users.first();
     if (!target) {
-      return message.reply(`**❌ :: ${author}**, Missing target identifier!\n> Please mention a user to transfer ${name} to. Example: \`${prefix}give @user 100\``);
+      return message.reply(`**❌ ● ${author}**, Missing target identifier!\n> Please mention a user to transfer ${name} to. Example: \`${prefix}give @user 100\``);
     }
 
     if (target.id === message.author.id) {
-      return message.reply(`**❌ :: ${author}**, Transaction failed!\n> You cannot transfer ${name} to yourself.`);
+      return message.reply(`**❌ ● ${author}**, Transaction failed!\n> You cannot transfer ${name} to yourself.`);
     }
 
     if (target.bot) {
-      return message.reply(`**❌ :: ${author}**, Transaction failed!\n> You cannot transfer ${name} to a bot.`);
+      return message.reply(`**❌ ● ${author}**, Transaction failed!\n> You cannot transfer ${name} to a bot.`);
     }
 
     const amount = parseInt(args[1] || args[0]);
     if (isNaN(amount) || amount <= 0) {
-      return message.reply(`**❌ :: ${author}**, Transaction failed!\n> Please specify a valid amount of ${name} to transfer.`);
+      return message.reply(`**❌ ● ${author}**, Transaction failed!\n> Please specify a valid amount of ${name} to transfer.`);
     }
 
     // Fetch author details
@@ -33,7 +33,7 @@ export default {
     const authorBalance = authorRow ? authorRow.balance : 0;
 
     if (authorBalance < amount) {
-      return message.reply(`**❌ :: ${author}**, Transaction failed!\n> You do not have enough ${name}! You only have **${authorBalance}** ${name}.`);
+      return message.reply(`**❌ ● ${author}**, Transaction failed!\n> You do not have enough ${name}! You only have **${authorBalance}** ${name}.`);
     }
 
     // Perform transfer within database transaction
@@ -48,9 +48,9 @@ export default {
       });
     } catch (dbError) {
       console.error('[DatabaseSync] Transfer failed:', dbError);
-      return message.reply(`**❌ :: ${author}**, Database transaction failed. Transfer aborted.`);
+      return message.reply(`**❌ ● ${author}**, Database transaction failed. Transfer aborted.`);
     }
 
-    return message.reply(`**💸 :: ${author}**, Transfer successful!\n> Transferred **${amount}** ${name} to **${target.username}**`);
+    return message.reply(`**💸 ● ${author}**, Transfer successful!\n> Transferred **${amount}** ${name} to **${target.username}**`);
   }
 };

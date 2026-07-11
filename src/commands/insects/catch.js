@@ -22,7 +22,7 @@ export default {
     }
 
     if (pool.length === 0) {
-      return message.reply(`[❌] **${author}** :: System error!\n> No insects found in the configuration.`);
+      return message.reply(`**❌ ● ${author}**, System error!\n> No insects found in the configuration.`);
     }
 
     // 2. Select random insect
@@ -65,10 +65,10 @@ export default {
       });
     } catch (dbError) {
       console.error('[DatabaseSync] Catch transaction failed:', dbError);
-      return message.reply(`**❌ :: ${author}**, Database transaction failed.\n> Failed to record your catch.`);
+      return message.reply(`**❌ ● ${author}**, Database transaction failed.\n> Failed to record your catch.`);
     }
 
-    let response = `**⌬ :: ${author}** went hunting in the colony and caught a \`${selected.id}\` ${selected.emoji}!\n> **+${xpGained} XP** generated!`;
+    let response = `**🌱 ● ${author}** went hunting in the colony and caught a \`${selected.id}\` ${selected.emoji}!\n> **+${xpGained} XP** generated!`;
     if (leveledUp) {
       response += `\n> Level up: reached Level **${newLevel}**! 🎉`;
     }

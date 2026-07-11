@@ -6,8 +6,9 @@ export default {
   example: ['fab ping'],
   related: [],
   async execute(client, message, args, ctx) {
-    const sent = await message.reply('🏓 Pinging...');
+    const author = message.author.username;
+    const sent = await message.reply(`**🏓 ● ${author}**, Pinging...`);
     const latency = sent.createdTimestamp - message.createdTimestamp;
-    return sent.edit(`🏓 Pong! Latency: **${latency}ms** | API Latency: **${Math.round(client.ws.ping)}ms**`);
+    return sent.edit(`**🏓 ● ${author}**, Pong!\n> Latency: **${latency}ms**\n> API Latency: **${Math.round(client.ws.ping)}ms**`);
   }
 };
