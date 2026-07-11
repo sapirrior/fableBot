@@ -1,6 +1,7 @@
 import { readdir } from 'fs/promises';
 import { resolve } from 'path';
 import { pathToFileURL } from 'url';
+import { logger } from '../util/logger.js';
 
 export const registry = new Map();
 
@@ -8,8 +9,15 @@ export const registry = new Map();
  * Dynamically loads all command modules into the registry.
  */
 export async function loadCommands() {
-  const dirs = ['economy', 'insects', 'social', 'util'];
   const baseDir = resolve('./src/commands');
+  let dirs = [];
+  try {
+    const contents = await readdir(baseDir, { withFileTypes: true });
+    dirs = contents.filter(dirent => dirent.isDirectory()).map(dirent => dirent.name);
+  } catch (err) {
+    logger.error('Failed to read commands directory', err, 'CommandHandler');
+    return;
+  }
 
   for (const dir of dirs) {
     try {
@@ -24,22 +32,32 @@ export async function loadCommands() {
         const cmd = cmdModule.default;
 
         if (!cmd || !cmd.name) {
-          console.warn(`[CommandHandler] Command in ${dir}/${file} is missing default export or name property.`);
+          logger.warn(`Command in ${dir}/${file} is missing default export or name property.`, 'CommandHandler');
           continue;
         }
 
-        registry.set(cmd.name.toLowerCase(), cmd);
+        cmd.category = dir;
+        const nameLower = cmd.name.toLowerCase();
+        if (registry.has(nameLower)) {
+          logger.warn(`Duplicate command name registered: "${nameLower}" from ${dir}/${file}`, 'CommandHandler');
+        }
+        registry.set(nameLower, cmd);
+        
         if (cmd.aliases && Array.isArray(cmd.aliases)) {
           for (const alias of cmd.aliases) {
-            registry.set(alias.toLowerCase(), cmd);
+            const aliasLower = alias.toLowerCase();
+            if (registry.has(aliasLower)) {
+              logger.warn(`Duplicate command alias registered: "${aliasLower}" for command "${cmd.name}"`, 'CommandHandler');
+            }
+            registry.set(aliasLower, cmd);
           }
         }
       }
     } catch (err) {
       // Directory might not exist or be empty during early phase
-      console.warn(`[CommandHandler] Directory ${dir} could not be read or loaded: ${err.message}`);
+      logger.warn(`Directory ${dir} could not be read or loaded: ${err.message}`, 'CommandHandler');
     }
   }
 
-  console.log(`[CommandHandler] Successfully loaded ${registry.size} command mapping entries.`);
+  logger.info(`Successfully loaded ${registry.size} command mapping entries.`, 'CommandHandler');
 }

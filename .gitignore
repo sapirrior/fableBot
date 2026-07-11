@@ -4,5 +4,8 @@ node_modules/
 *.db-journal
 *.db-wal
 *.db-shm
+
 .owo/
+.mee6/
+.dankmemer/
 .gemini/

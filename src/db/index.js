@@ -1,6 +1,7 @@
 import { DatabaseSync } from 'node:sqlite';
 import { resolve, dirname } from 'path';
 import { mkdirSync } from 'fs';
+import { logger } from '../util/logger.js';
 
 let db;
 const stmts = new Map();
@@ -16,6 +17,14 @@ export function initDb(dbPath = './src/db/database/fable_data.db') {
   db.exec('PRAGMA foreign_keys = ON;');
   db.exec('PRAGMA busy_timeout = 5000;');
   db.exec('PRAGMA cache_size = -4000;');
+
+  // Optimize & Vacuum on boot
+  try {
+    db.exec('PRAGMA optimize;');
+    db.exec('VACUUM;');
+  } catch (err) {
+    logger.error('Failed to optimize/vacuum database', err, 'Database');
+  }
 
   // --- Schema ---
   db.exec(`
@@ -37,6 +46,25 @@ export function initDb(dbPath = './src/db/database/fable_data.db') {
       count        INTEGER NOT NULL DEFAULT 1,
       first_caught INTEGER NOT NULL DEFAULT (unixepoch()),
       PRIMARY KEY (user_id, insect_id)
+    ) STRICT;
+  `);
+
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS user_ban (
+      user_id      TEXT    NOT NULL,
+      command      TEXT    NOT NULL,
+      reason       TEXT,
+      banned_at    INTEGER NOT NULL DEFAULT (unixepoch()),
+      PRIMARY KEY (user_id, command)
+    ) STRICT;
+  `);
+
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS disabled_commands (
+      channel_id   TEXT    NOT NULL,
+      command      TEXT    NOT NULL,
+      disabled_at  INTEGER NOT NULL DEFAULT (unixepoch()),
+      PRIMARY KEY (channel_id, command)
     ) STRICT;
   `);
 
@@ -77,6 +105,15 @@ export function initDb(dbPath = './src/db/database/fable_data.db') {
   prepare('getTopBalance',    'SELECT user_id, balance FROM users ORDER BY balance DESC LIMIT ?');
   prepare('getTopCollection', 'SELECT user_id, SUM(count) as total FROM collection GROUP BY user_id ORDER BY total DESC LIMIT ?');
 
+  // Bans and Disabled Commands
+  prepare('checkUserBan',       'SELECT * FROM user_ban WHERE user_id = ? AND (command = ? OR command = \'all\')');
+  prepare('banUserCommand',     'INSERT OR IGNORE INTO user_ban (user_id, command, reason) VALUES (?, ?, ?)');
+  prepare('liftUserCommandBan', 'DELETE FROM user_ban WHERE user_id = ? AND command = ?');
+  
+  prepare('checkDisabledCommand', 'SELECT * FROM disabled_commands WHERE channel_id = ? AND (command = ? OR command = \'all\')');
+  prepare('disableCommand',       'INSERT OR IGNORE INTO disabled_commands (channel_id, command) VALUES (?, ?)');
+  prepare('enableCommand',        'DELETE FROM disabled_commands WHERE channel_id = ? AND command = ?');
+
   return db;
 }
 
@@ -84,7 +121,7 @@ function prepare(name, sql) {
   try {
     stmts.set(name, db.prepare(sql));
   } catch (error) {
-    console.error(`[DB] Failed to prepare statement "${name}":`, error);
+    logger.error(`Failed to prepare statement "${name}"`, error, 'Database');
     throw error;
   }
 }
@@ -99,25 +136,48 @@ export function query(name) {
   return stmt;
 }
 
+let transactionDepth = 0;
+
 /**
  * Runs a function inside a SQLite transaction.
  * Automatically commits on success, rolls back on error.
+ * Supports nested transactions via SAVEPOINT.
  */
 export function transaction(fn) {
-  db.exec('BEGIN;');
+  const depth = transactionDepth;
+  transactionDepth++;
+
+  if (depth === 0) {
+    db.exec('BEGIN;');
+  } else {
+    db.exec(`SAVEPOINT sp_${depth};`);
+  }
+
   try {
     const result = fn();
-    db.exec('COMMIT;');
+    
+    if (depth === 0) {
+      db.exec('COMMIT;');
+    } else {
+      db.exec(`RELEASE SAVEPOINT sp_${depth};`);
+    }
+    
     return result;
   } catch (error) {
-    db.exec('ROLLBACK;');
+    if (depth === 0) {
+      db.exec('ROLLBACK;');
+    } else {
+      db.exec(`ROLLBACK TO SAVEPOINT sp_${depth};`);
+    }
     throw error;
+  } finally {
+    transactionDepth--;
   }
 }
 
 export function closeDb() {
   if (db) {
     db.close();
-    console.log('[DB] Connection closed.');
+    logger.warn('Connection closed.', 'Database');
   }
 }

@@ -1,15 +1,16 @@
 {
-  "prefix": "f!",
+  "prefix": "ah",
   "embedColors": {
-    "brand":   "#5865F2",
+    "brand": "#5865F2",
     "success": "#57F287",
-    "error":   "#ED4245",
-    "warn":    "#FEE75C",
-    "info":    "#00B0F4"
+    "error": "#ED4245",
+    "warn": "#FEE75C",
+    "info": "#00B0F4"
   },
   "cooldownSweepIntervalMs": 300000,
   "dailyCooldownMs": 79200000,
   "dailyRewardCoins": 250,
   "catchCooldownMs": 10000,
-  "currencyName": "Fables"
+  "currencyName": "⌬",
+  "statusMessage": "with ? butterflies"
 }

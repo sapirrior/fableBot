@@ -1,18 +1,14 @@
 /**
  * Centralized message sender utility.
  * 
- * Mirrors OwO's sender.js pattern (.owo/src/utils/sender.js).
+ * Dan adapted format:
  * 
- * OwO exact format (from sender.js lines 87–95):
  *   **${emoji} | ${username}**${content}
- * 
- * Fable adapted format (● instead of |):
- *   **${emoji} ● ${username}**${content}
  */
 
 /**
  * Sends a standard bold-prefix reply.
- * Produces: **EMOJI ● username**, content...
+ * Produces: **EMOJI | username**, content...
  * 
  * @param {Message} message  - Discord message object (with patched reply)
  * @param {string}  emoji    - Status emoji e.g. '💵'
@@ -20,19 +16,19 @@
  */
 export function reply(message, emoji, content) {
   const name = message.author.username;
-  return message.reply(`**${emoji} ● ${name}**${content}`);
+  return message.reply(`**${emoji} | ${name}**${content}`);
 }
 
 /**
  * Sends a standard error reply.
- * Produces: **❌ ● username**, content...
+ * Produces: **❌ | username**, content...
  * 
  * @param {Message} message
  * @param {string}  content - Error text, starts with ", " e.g. ", not enough Fables!"
  */
 export function error(message, content) {
   const name = message.author.username;
-  return message.reply(`**❌ ● ${name}**${content}`);
+  return message.reply(`**❌ | ${name}**${content}`);
 }
 
 /**
