@@ -46,25 +46,25 @@ export default {
 
     // General command list display matching OwO category style
     const embed = {
-      description: `Here is the list of commands!\nFor more info on a specific command, use \`${prefix}help {command}\``,
+      description: `Here is the list of commands! The prefix is \`${prefix}\`\nFor more info on a specific command, use \`${prefix}help {command}\``,
       color: parseInt(ctx.config.embedColor.replace('#', ''), 16),
       author: { name: 'Fable Command List', icon_url: message.author.displayAvatarURL() },
       fields: [
         {
           name: '💰 Economy',
-          value: `\`${prefix} balance\`  \`${prefix} daily\`  \`${prefix} give\``
+          value: '`balance`  `daily`  `give`'
         },
         {
           name: '🌱 Insects',
-          value: `\`${prefix} catch\`  \`${prefix} collection\`  \`${prefix} insectdex\`  \`${prefix} sell\`  \`${prefix} release\``
+          value: '`catch`  `collection`  `insectdex`  `sell`  `release`'
         },
         {
           name: '🎭 Social',
-          value: `\`${prefix} profile\`  \`${prefix} leaderboard\``
+          value: '`profile`  `leaderboard`'
         },
         {
           name: '🔧 Utility',
-          value: `\`${prefix} ping\`  \`${prefix} help\``
+          value: '`ping`  `help`'
         }
       ]
     };
