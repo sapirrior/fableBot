@@ -71,7 +71,7 @@ export function onMessageCreate(client, message) {
   const cooldownMs = cmd.cooldown ?? 3000;
   const cooldownLeft = checkCooldown(message.author.id, cmd.name, cooldownMs);
   if (cooldownLeft > 0) {
-    message.reply(`⏳ **::** **${message.author.username}**, System throttle active!\n> Please wait **${(cooldownLeft / 1000).toFixed(1)}s** before querying this node again.`);
+    message.reply(`**⏳ :: ${message.author.username}**, System throttle active!\n> Please wait **${(cooldownLeft / 1000).toFixed(1)}s** before querying this node again.`);
     return;
   }
 

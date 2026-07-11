@@ -15,7 +15,7 @@ export default {
 
     const embed = {
       color: parseInt(ctx.config.embedColor.replace('#', ''), 16),
-      title: '📖 **::** Fable Insectdex Node',
+      title: '**📖 :: Fable Insectdex Node**',
       description: `==================================\n${description}`,
       footer: { text: `Query command: ${ctx.config.prefix}catch` }
     };

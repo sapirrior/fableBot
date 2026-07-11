@@ -10,7 +10,7 @@ export default {
     const author = message.author.username;
 
     if (!args[0]) {
-      return message.reply(`❌ **::** **${author}**, Missing target identifier!\n> Please specify an insect to sell. Example: \`${prefix}sell ant 1\` or \`${prefix}sell all\``);
+      return message.reply(`**❌ :: ${author}**, Missing target identifier!\n> Please specify an insect to sell. Example: \`${prefix}sell ant 1\` or \`${prefix}sell all\``);
     }
 
     const userId = message.author.id;
@@ -19,7 +19,7 @@ export default {
     // Fetch user's current collection
     const collectionRows = ctx.query('getCollection').all(userId);
     if (collectionRows.length === 0) {
-      return message.reply(`❌ **::** **${author}**, Transaction failed!\n> Your collection is empty! Nothing to sell.`);
+      return message.reply(`**❌ :: ${author}**, Transaction failed!\n> Your collection is empty! Nothing to sell.`);
     }
 
     // Option 1: Sell all
@@ -45,21 +45,21 @@ export default {
         });
       } catch (dbError) {
         console.error('[DatabaseSync] Sell-all transaction failed:', dbError);
-        return message.reply(`❌ **::** **${author}**, Database transaction failed.\n> FAILED to sell insects due to a database error.`);
+        return message.reply(`**❌ :: ${author}**, Database transaction failed.\n> FAILED to sell insects due to a database error.`);
       }
 
-      return message.reply(`💵 **::** **${author}**, Successfully sold **${totalSold}** insects!\n> ${name} generated: **+${totalCoinsGained} ${name}**`);
+      return message.reply(`**💵 :: ${author}**, Successfully sold **${totalSold}** insects!\n> ${name} generated: **+${totalCoinsGained} ${name}**`);
     }
 
     // Option 2: Sell specific insect
     const spec = ctx.insets.find(i => i.id === targetQuery || i.name.toLowerCase() === targetQuery);
     if (!spec) {
-      return message.reply(`❌ **::** **${author}**, Unknown insect species: "${targetQuery}"!\n> Use \`${prefix}insectdex\` to view valid insects.`);
+      return message.reply(`**❌ :: ${author}**, Unknown insect species: "${targetQuery}"!\n> Use \`${prefix}insectdex\` to view valid insects.`);
     }
 
     const userQuantityRow = collectionRows.find(r => r.insect_id === spec.id);
     if (!userQuantityRow || userQuantityRow.count <= 0) {
-      return message.reply(`❌ **::** **${author}**, Transaction failed!\n> You do not have any \`${spec.id}\` in your collection.`);
+      return message.reply(`**❌ :: ${author}**, Transaction failed!\n> You do not have any \`${spec.id}\` in your collection.`);
     }
 
     // Determine quantity to sell
@@ -70,13 +70,13 @@ export default {
       } else {
         quantityToSell = parseInt(args[1]);
         if (isNaN(quantityToSell) || quantityToSell <= 0) {
-          return message.reply(`❌ **::** **${author}**, Transaction failed!\n> Please specify a valid quantity to sell.`);
+          return message.reply(`**❌ :: ${author}**, Transaction failed!\n> Please specify a valid quantity to sell.`);
         }
       }
     }
 
     if (quantityToSell > userQuantityRow.count) {
-      return message.reply(`❌ **::** **${author}**, Transaction failed!\n> You only have **${userQuantityRow.count}** \`${spec.id}\`.`);
+      return message.reply(`**❌ :: ${author}**, Transaction failed!\n> You only have **${userQuantityRow.count}** \`${spec.id}\`.`);
     }
 
     const totalReward = spec.value * quantityToSell;
@@ -97,9 +97,9 @@ export default {
       });
     } catch (dbError) {
       console.error('[DatabaseSync] Sell transaction failed:', dbError);
-      return message.reply(`❌ **::** **${author}**, Database transaction failed.\n> FAILED to execute sell order.`);
+      return message.reply(`**❌ :: ${author}**, Database transaction failed.\n> FAILED to execute sell order.`);
     }
 
-    return message.reply(`💵 **::** **${author}**, Successfully sold **${quantityToSell}x** \`${spec.id}\` ${spec.emoji}!\n> ${name} generated: **+${totalReward} ${name}**`);
+    return message.reply(`**💵 :: ${author}**, Successfully sold **${quantityToSell}x** \`${spec.id}\` ${spec.emoji}!\n> ${name} generated: **+${totalReward} ${name}**`);
   }
 };
