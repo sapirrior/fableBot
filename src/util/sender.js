@@ -1,3 +1,5 @@
+import { configManager } from '../services/ConfigService.js';
+
 /**
  * Centralized message sender utility.
  * 
@@ -39,9 +41,7 @@ export function error(message, content) {
  * @param {Object}  opts    - Discord embed data (title, description, fields, author, footer, color, thumbnail)
  */
 export function embed(message, opts) {
-  let color = opts.color;
-  if (typeof color === 'string') {
-    color = parseInt(color.replace('#', ''), 16);
-  }
+  const configColor = configManager.get('embedColor') || '6D3CCF';
+  const color = parseInt(configColor.replace('#', ''), 16);
   return message.reply({ embeds: [{ ...opts, color }] });
 }

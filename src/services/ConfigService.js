@@ -16,7 +16,16 @@ class ConfigManager {
       this.config = JSON.parse(readFileSync(configPath, 'utf8'));
     } catch (err) {
       logger.error('Failed to read config file', err, 'ConfigManager');
-      this.config = { prefix: 'ah', currencyName: '⌬', statusMessage: 'with ? butterflies' };
+      this.config = {
+        prefix: 'sudo',
+        embedColor: '#000000',
+        cooldownSweepIntervalMs: 300000,
+        dailyCooldownMs: 79200000,
+        dailyRewardCoins: 250,
+        catchCooldownMs: 10000,
+        currencyName: '⌬',
+        statusMessage: '? butterflies'
+      };
     }
   }
 

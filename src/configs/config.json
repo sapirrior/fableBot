@@ -1,12 +1,6 @@
 {
   "prefix": "sudo",
-  "embedColors": {
-    "brand": "#5865F2",
-    "success": "#57F287",
-    "error": "#ED4245",
-    "warn": "#FEE75C",
-    "info": "#00B0F4"
-  },
+  "embedColor": "#000000",
   "cooldownSweepIntervalMs": 300000,
   "dailyCooldownMs": 79200000,
   "dailyRewardCoins": 250,
