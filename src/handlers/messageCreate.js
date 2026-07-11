@@ -19,8 +19,11 @@ export function onMessageCreate(client, message) {
 
   let commandText = '';
 
+  const lowerContent = content.toLowerCase();
+  const lowerPrefix = prefix.toLowerCase();
+
   // Resolve prefix / triggers (require prefix or direct bot mention)
-  if (content.startsWith(prefix)) {
+  if (lowerContent.startsWith(lowerPrefix)) {
     commandText = content.slice(prefix.length).trim();
   } else if (content.startsWith(mentionPrefix)) {
     commandText = content.slice(mentionPrefix.length).trim();
