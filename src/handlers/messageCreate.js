@@ -12,6 +12,18 @@ export function onMessageCreate(client, message) {
   // Ignore bots, webhooks, and Direct Messages
   if (message.author.bot || !message.guild) return;
 
+  // Globally disable mention ping on message replies
+  const originalReply = message.reply.bind(message);
+  message.reply = function (options) {
+    if (typeof options === 'string') {
+      return originalReply({ content: options, allowedMentions: { repliedUser: false } });
+    } else if (typeof options === 'object' && options !== null) {
+      options.allowedMentions = { ...options.allowedMentions, repliedUser: false };
+      return originalReply(options);
+    }
+    return originalReply(options);
+  };
+
   const content = message.content.trim();
   const prefix = config.prefix;
   const mentionPrefix = `<@${client.user.id}>`;

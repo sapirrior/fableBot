@@ -52,19 +52,19 @@ export default {
       fields: [
         {
           name: '💰 Economy',
-          value: '`balance`  `daily`  `give`'
+          value: `\`${prefix} balance\`  \`${prefix} daily\`  \`${prefix} give\``
         },
         {
           name: '🌱 Insects',
-          value: '`catch`  `collection`  `insectdex`  `sell`  `release`'
+          value: `\`${prefix} catch\`  \`${prefix} collection\`  \`${prefix} insectdex\`  \`${prefix} sell\`  \`${prefix} release\``
         },
         {
           name: '🎭 Social',
-          value: '`profile`  `leaderboard`'
+          value: `\`${prefix} profile\`  \`${prefix} leaderboard\``
         },
         {
           name: '🔧 Utility',
-          value: '`ping`  `help`'
+          value: `\`${prefix} ping\`  \`${prefix} help\``
         }
       ]
     };
