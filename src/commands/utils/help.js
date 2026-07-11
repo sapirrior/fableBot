@@ -16,13 +16,13 @@ export default {
       social: { name: '🎭 Social', order: 1 },
       economy: { name: '💰 Economy', order: 2 },
       insects: { name: '🌿 Insects', order: 3 },
-      util: { name: '🔧 Utility', order: 4 }
+      utils: { name: '🔧 Utility', order: 4 }
     };
 
     // Group commands
     const grouped = {};
     for (const cmd of uniqueCmds) {
-      const cat = cmd.category || 'util';
+      const cat = cmd.category || 'utils';
       if (!grouped[cat]) {
         grouped[cat] = [];
       }

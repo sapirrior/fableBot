@@ -69,7 +69,7 @@ src/
 │   ├── ServiceContainer.js# dependency injector map
 │   └── Shutdown.js        # graceful process shutdowns & in-flight connection drains
 ├── commands/
-│   └── util/              # categorized command modules (e.g., help, ping, prefix)
+│   └── utils/             # categorized command modules (e.g., help, ping, prefix)
 ├── db/
 │   └── index.js           # SQLite setup, WAL settings, & nested savepoint transactions
 ├── events/
