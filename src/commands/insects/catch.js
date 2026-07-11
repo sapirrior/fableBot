@@ -1,0 +1,74 @@
+import { transaction } from '../../db/index.js';
+
+export default {
+  name: 'catch',
+  aliases: ['c', 'hunt'],
+  cooldown: 10000, // 10 seconds (loaded from config)
+  description: 'Catch a random insect in the wild.',
+  async execute(client, message, args, ctx) {
+    const userId = message.author.id;
+    const insects = ctx.insets;
+
+    // 1. Calculate weighted pool
+    const pool = [];
+    for (const insect of insects) {
+      for (let i = 0; i < insect.weight; i++) {
+        pool.push(insect);
+      }
+    }
+
+    if (pool.length === 0) {
+      return message.reply('❌ No insects found in the config file.');
+    }
+
+    // 2. Select random insect
+    const selected = pool[Math.floor(Math.random() * pool.length)];
+
+    // XP gained based on rarity
+    let xpGained = 15;
+    if (selected.rarity === 'uncommon') xpGained = 25;
+    else if (selected.rarity === 'rare') xpGained = 50;
+    else if (selected.rarity === 'epic') xpGained = 100;
+    else if (selected.rarity === 'legendary') xpGained = 250;
+
+    let leveledUp = false;
+    let newLevel = 1;
+
+    try {
+      transaction(() => {
+        // Record insect in collection
+        ctx.query('catchInsect').run(userId, selected.id);
+
+        // Fetch user data
+        const userRow = ctx.query('getUser').get(userId);
+        let xp = userRow.xp + xpGained;
+        let level = userRow.level;
+
+        // Check level up
+        let xpNeeded = 100 + level * 50;
+        if (xp >= xpNeeded) {
+          while (xp >= xpNeeded) {
+            xp -= xpNeeded;
+            level++;
+            xpNeeded = 100 + level * 50;
+          }
+          leveledUp = true;
+          newLevel = level;
+        }
+
+        // Save new xp and level
+        ctx.query('updateUserXP').run(xp, level, userId);
+      });
+    } catch (dbError) {
+      console.error('[DatabaseSync] Catch transaction failed:', dbError);
+      return message.reply('❌ Failed to record your catch in the database.');
+    }
+
+    let response = `🕸️ **| ${message.author.username}** went hunting and caught a **${selected.name}** ${selected.emoji}! \`[${selected.rarity.toUpperCase()}]\` (+${xpGained} XP)`;
+    if (leveledUp) {
+      response += `\n🎉 **LEVEL UP!** You reached **Level ${newLevel}**!`;
+    }
+
+    return message.reply(response);
+  }
+};

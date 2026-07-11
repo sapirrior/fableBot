@@ -1,0 +1,22 @@
+[
+  {"id": "ant", "name": "Ant", "emoji": "🐜", "rarity": "common", "value": 10, "weight": 300},
+  {"id": "honeybee", "name": "Honeybee", "emoji": "🐝", "rarity": "common", "value": 12, "weight": 280},
+  {"id": "beetle", "name": "Beetle", "emoji": "🪲", "rarity": "common", "value": 15, "weight": 260},
+  {"id": "ladybug", "name": "Ladybug", "emoji": "🐞", "rarity": "common", "value": 18, "weight": 240},
+  {"id": "fly", "name": "Housefly", "emoji": "🪰", "rarity": "common", "value": 8, "weight": 220},
+  {"id": "mosquito", "name": "Mosquito", "emoji": "🦟", "rarity": "common", "value": 5, "weight": 200},
+  {"id": "caterpillar", "name": "Caterpillar", "emoji": "🐛", "rarity": "uncommon", "value": 35, "weight": 150},
+  {"id": "snail", "name": "Snail", "emoji": "🐌", "rarity": "uncommon", "value": 40, "weight": 140},
+  {"id": "cricket", "name": "Cricket", "emoji": "🦗", "rarity": "uncommon", "value": 45, "weight": 130},
+  {"id": "cockroach", "name": "Cockroach", "emoji": "🪳", "rarity": "uncommon", "value": 30, "weight": 120},
+  {"id": "worm", "name": "Earthworm", "emoji": "🪱", "rarity": "uncommon", "value": 25, "weight": 110},
+  {"id": "butterfly", "name": "Butterfly", "emoji": "🦋", "rarity": "rare", "value": 100, "weight": 70},
+  {"id": "dragonfly", "name": "Dragonfly", "emoji": "🛸", "rarity": "rare", "value": 120, "weight": 60},
+  {"id": "spider", "name": "Spider", "emoji": "🕷️", "rarity": "rare", "value": 150, "weight": 50},
+  {"id": "centipede", "name": "Centipede", "emoji": "🐛", "rarity": "rare", "value": 130, "weight": 55},
+  {"id": "praying_mantis", "name": "Praying Mantis", "emoji": "🦗", "rarity": "epic", "value": 400, "weight": 20},
+  {"id": "scorpion", "name": "Scorpion", "emoji": "🦂", "rarity": "epic", "value": 500, "weight": 15},
+  {"id": "moth", "name": "Luna Moth", "emoji": "🦋", "rarity": "epic", "value": 600, "weight": 10},
+  {"id": "cicada", "name": "Golden Cicada", "emoji": "🪲", "rarity": "legendary", "value": 2000, "weight": 3},
+  {"id": "atlas_beetle", "name": "Atlas Beetle", "emoji": "🪲", "rarity": "legendary", "value": 2500, "weight": 2}
+]

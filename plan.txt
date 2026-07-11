@@ -1,0 +1,132 @@
+# Fable — Prototype Implementation Plan
+
+> **Insect-collecting Discord bot | Single Global Prefix | Node.js 24 | node:sqlite | Prototype Version**
+
+---
+
+## 1. Directory Structure
+
+```
+fable/
+├── src/
+│   ├── commands/
+│   │   ├── economy/
+│   │   │   ├── balance.js
+│   │   │   ├── daily.js
+│   │   │   └── give.js
+│   │   ├── insects/
+│   │   │   ├── catch.js
+│   │   │   ├── collection.js
+│   │   │   ├── insectdex.js
+│   │   │   ├── release.js
+│   │   │   └── sell.js
+│   │   ├── social/
+│   │   │   ├── profile.js
+│   │   │   └── leaderboard.js
+│   │   └── util/
+│   │       ├── help.js
+│   │       └── ping.js
+│   ├── configs/
+│   │   ├── config.json         ← Bot configurations & global prefix
+│   │   └── insets.json         ← Static definition of 20 unicode insects
+│   ├── db/
+│   │   └── index.js            ← node:sqlite (DatabaseSync) connection & schema
+│   ├── handlers/
+│   │   ├── commandHandler.js   ← Registry + dynamic ESM loader
+│   │   └── messageCreate.js    ← Event handler & command dispatch pipeline
+│   ├── util/
+│   │   └── cooldown.js         ← In-process Map cooldown manager
+│   └── index.js                ← Bot entry point
+├── fable_data.db               ← Created at runtime
+├── package.json
+└── .env
+```
+
+---
+
+## 2. Database Schema (`fable_data.db`)
+
+SQLite tables are created using `STRICT` mode (native to modern SQLite versions). No prefix or guilds table is needed since the prefix is global.
+
+### 2.1 `users`
+```sql
+CREATE TABLE IF NOT EXISTS users (
+    user_id     TEXT PRIMARY KEY,
+    balance     INTEGER NOT NULL DEFAULT 0,
+    xp          INTEGER NOT NULL DEFAULT 0,
+    level       INTEGER NOT NULL DEFAULT 1,
+    last_daily  INTEGER NOT NULL DEFAULT 0,
+    created_at  INTEGER NOT NULL DEFAULT (unixepoch())
+) STRICT;
+```
+
+### 2.2 `collection`
+```sql
+CREATE TABLE IF NOT EXISTS collection (
+    user_id      TEXT NOT NULL REFERENCES users(user_id),
+    insect_id    TEXT NOT NULL,
+    count        INTEGER NOT NULL DEFAULT 1,
+    first_caught INTEGER NOT NULL DEFAULT (unixepoch()),
+    PRIMARY KEY (user_id, insect_id)
+) STRICT;
+```
+
+---
+
+## 3. Configuration Files
+
+### 3.1 `src/configs/config.json`
+```json
+{
+  "prefix": "f!",
+  "embedColor": "#2f3136",
+  "cooldownSweepIntervalMs": 300000,
+  "dailyCooldownMs": 79200000,
+  "dailyRewardCoins": 250,
+  "catchCooldownMs": 10000
+}
+```
+
+### 3.2 `src/configs/insets.json` (20 insects)
+```json
+[
+  {"id": "ant", "name": "Ant", "emoji": "🐜", "rarity": "common", "value": 10, "weight": 300},
+  {"id": "honeybee", "name": "Honeybee", "emoji": "🐝", "rarity": "common", "value": 12, "weight": 280},
+  {"id": "beetle", "name": "Beetle", "emoji": "🪲", "rarity": "common", "value": 15, "weight": 260},
+  {"id": "ladybug", "name": "Ladybug", "emoji": "🐞", "rarity": "common", "value": 18, "weight": 240},
+  {"id": "fly", "name": "Housefly", "emoji": "🪰", "rarity": "common", "value": 8, "weight": 220},
+  {"id": "mosquito", "name": "Mosquito", "emoji": "🦟", "rarity": "common", "value": 5, "weight": 200},
+  {"id": "caterpillar", "name": "Caterpillar", "emoji": "🐛", "rarity": "uncommon", "value": 35, "weight": 150},
+  {"id": "snail", "name": "Snail", "emoji": "🐌", "rarity": "uncommon", "value": 40, "weight": 140},
+  {"id": "cricket", "name": "Cricket", "emoji": "🦗", "rarity": "uncommon", "value": 45, "weight": 130},
+  {"id": "cockroach", "name": "Cockroach", "emoji": "🪳", "rarity": "uncommon", "value": 30, "weight": 120},
+  {"id": "worm", "name": "Earthworm", "emoji": "🪱", "rarity": "uncommon", "value": 25, "weight": 110},
+  {"id": "butterfly", "name": "Butterfly", "emoji": "🦋", "rarity": "rare", "value": 100, "weight": 70},
+  {"id": "dragonfly", "name": "Dragonfly", "emoji": "🛸", "rarity": "rare", "value": 120, "weight": 60},
+  {"id": "spider", "name": "Spider", "emoji": "🕷️", "rarity": "rare", "value": 150, "weight": 50},
+  {"id": "centipede", "name": "Centipede", "emoji": "🐛", "rarity": "rare", "value": 130, "weight": 55},
+  {"id": "praying_mantis", "name": "Praying Mantis", "emoji": "🦗", "rarity": "epic", "value": 400, "weight": 20},
+  {"id": "scorpion", "name": "Scorpion", "emoji": "🦂", "rarity": "epic", "value": 500, "weight": 15},
+  {"id": "moth", "name": "Luna Moth", "emoji": "🦋", "rarity": "epic", "value": 600, "weight": 10},
+  {"id": "cicada", "name": "Golden Cicada", "emoji": "🪲", "rarity": "legendary", "value": 2000, "weight": 3},
+  {"id": "atlas_beetle", "name": "Atlas Beetle", "emoji": "🪲", "rarity": "legendary", "value": 2500, "weight": 2}
+]
+```
+
+---
+
+## 4. Phase Plan
+
+- [x] **Setup & Version Control:** Init git repo, write `.gitignore`, configure `package.json`
+- [ ] **Phase 1 — Core Prototype & Configurations:**
+  - Create `src/configs/config.json` & `src/configs/insets.json`
+  - Create `src/db/index.js` utilizing Node 24 `node:sqlite` (DatabaseSync)
+  - Create Command Registry loader (`src/handlers/commandHandler.js`) using dynamic ESM file URLs
+  - Create event dispatcher (`src/handlers/messageCreate.js`) with static prefix resolve & basic error bounds
+  - Create `src/index.js` bot runner (using discord.js client)
+- [ ] **Phase 2 — Economy & Social Commands:**
+  - Write `balance`, `daily`, `give`, `profile`, and `leaderboard` commands
+- [ ] **Phase 3 — Insect Catch & Collection:**
+  - Write `catch`, `collection`, `insectdex`, `sell`, and `release` commands
+- [ ] **Phase 4 — Execution & Validation:**
+  - Verify SQLite transactions, upsert queries, leveling mechanics, and overall stability.
