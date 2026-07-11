@@ -48,7 +48,7 @@ const client = new Client({
   })
 });
 
-client.once('ready', () => {
+client.once('clientReady', () => {
   console.log(`[Fable] Logged in as ${client.user.tag}`);
 });
 
