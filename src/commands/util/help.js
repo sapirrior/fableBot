@@ -2,7 +2,8 @@ export default {
   name: 'help',
   aliases: ['h', 'commands', 'cmds'],
   cooldown: 3000,
-  description: 'Displays the list of commands or info on a specific command.',
+  description: 'Displays the list of commands.',
+  example: ['help'],
   async execute(client, message, args, ctx) {
     const { prefix } = ctx.config;
     const { registry } = await import('../../handlers/commandHandler.js');

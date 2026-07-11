@@ -23,6 +23,8 @@ export default {
   aliases: [],
   cooldown: 10000,
   description: 'Change the prefix for the server! Only server admins can use this command.',
+  args: '[new_prefix]',
+  example: ['prefix', 'prefix ah'],
   async execute(client, message, args, ctx) {
     const username = message.author.username;
 
