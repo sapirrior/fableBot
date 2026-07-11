@@ -28,10 +28,10 @@ export async function loadCommands() {
           continue;
         }
 
-        registry.set(cmd.name, cmd);
+        registry.set(cmd.name.toLowerCase(), cmd);
         if (cmd.aliases && Array.isArray(cmd.aliases)) {
           for (const alias of cmd.aliases) {
-            registry.set(alias, cmd);
+            registry.set(alias.toLowerCase(), cmd);
           }
         }
       }

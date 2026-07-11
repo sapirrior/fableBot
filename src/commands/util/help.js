@@ -44,9 +44,8 @@ export default {
       return message.reply(text);
     }
 
-    // General command list display matching OwO category style
     const embed = {
-      description: `Here is the list of commands! The prefix is \`${prefix}\`\nFor more info on a specific command, use \`${prefix}help {command}\``,
+      description: `Here is the list of commands!\nThe prefix is \`${prefix}\`\nFor more info on a specific command, use \`${prefix}help {command}\``,
       color: parseInt(ctx.config.embedColor.replace('#', ''), 16),
       author: { name: 'Fable Command List', icon_url: message.author.displayAvatarURL() },
       fields: [
