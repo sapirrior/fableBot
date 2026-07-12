@@ -7,6 +7,7 @@ import * as sender from '../util/sender.js';
 import * as constants from '../util/constants.js';
 import * as parse from '../util/parse.js';
 import { query, transaction } from '../db/index.js';
+import { registry } from '../handlers/commandHandler.js';
 
 /**
  * Resolves the dynamic execution context for commands.
@@ -28,6 +29,7 @@ export function buildContext() {
     sender,
     constants,
     parse,
+    registry,
     fmt: (n) => Number(n).toLocaleString('en-US'),
     getInsect: (id) => insectService.getById(id)
   };

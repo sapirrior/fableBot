@@ -14,6 +14,7 @@ This bot is designed with strict minimalist principles and follows the **Open/Cl
 - **Nested Database Transactions**: `node:sqlite` transaction compose wrapper equipped with SAVEPOINT counters for nested SQLite transactions.
 - **Self-Sweeping Memory Caches**: Commands and spam check caches bound memory growth by cleaning inactive user and channel entries periodically.
 - **Gateway Rate-Limiter Interceptor**: Catches and blocks spammers directly in the gateway pipeline before running database hooks.
+- **In-Memory Gzip Backups**: Periodically runs WAL checkpoints, reads the database file into memory, compresses it to gzip, and posts it as an attachment to a backup Discord channel.
 - **Clean Text Formatting**: Supports exact custom embeds and formats responses with status indicators utilizing `|` as the primary divider.
 
 ---
@@ -78,8 +79,12 @@ src/
 ├── handlers/
 │   ├── commandHandler.js  # dynamic commands mapper
 │   └── eventHandler.js    # dynamic events subscriber
+├── configs/
+│   ├── categories.js      # category metadata configuration helper
+│   ├── config.json        # bot configuration settings
+│   └── insets.json        # insect database definitions
 ├── services/
-│   ├── BanService.js      # DB user ban & channel disabled command checker
+│   ├── BackupService.js   # in-memory database zip backup scheduler
 │   ├── ConfigService.js   # atomic read/write manager for config.json
 │   ├── InsectService.js   # dynamic insets JSON query provider
 │   └── SpamGuardService.js# in-memory self-sweeping user & channel spam tracker

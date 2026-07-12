@@ -11,7 +11,7 @@ import { logger } from '../util/logger.js';
 import { configManager } from '../services/ConfigService.js';
 import { insectService } from '../services/InsectService.js';
 import { SpamGuardService } from '../services/SpamGuardService.js';
-import { banService } from '../services/BanService.js';
+import { backupService } from '../services/BackupService.js';
 import { container } from './ServiceContainer.js';
 
 /**
@@ -22,7 +22,7 @@ export async function bootstrap() {
   logger.info('Initializing application bootstrap sequence...', 'Bootstrap');
 
   // 1. Verify Environment
-  if (!process.env.DISCORD_TOKEN) {
+  if (!process.env.DISCORD_TOKEN?.trim()) {
     logger.error('DISCORD_TOKEN is missing in the environment or .env file.', null, 'Bootstrap');
     process.exit(1);
   }
@@ -41,7 +41,7 @@ export async function bootstrap() {
   container.register('config', configManager);
   container.register('insects', insectService);
   container.register('spamGuard', SpamGuardService);
-  container.register('ban', banService);
+  container.register('backup', backupService);
   logger.info('Registered services to ServiceContainer.', 'Bootstrap');
 
   // 4. Start sweepers
@@ -76,6 +76,8 @@ export async function bootstrap() {
 
   // 7. Load and register events
   await loadEvents(client);
+
+  client.on('error', (err) => logger.error('Discord gateway error', err, 'Client'));
 
   // 8. Connect to Discord Gateway
   try {

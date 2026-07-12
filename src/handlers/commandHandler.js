@@ -31,8 +31,8 @@ export async function loadCommands() {
         const cmdModule = await import(fileUrl);
         const cmd = cmdModule.default;
 
-        if (!cmd || !cmd.name) {
-          logger.warn(`Command in ${dir}/${file} is missing default export or name property.`, 'CommandHandler');
+        if (!cmd || !cmd.name || typeof cmd.execute !== 'function') {
+          logger.warn(`Command in ${dir}/${file} is missing 'name' or 'execute' function.`, 'CommandHandler');
           continue;
         }
 

@@ -6,7 +6,7 @@
 
 ## Project
 
-Dan — a Discord.js v14 prefix-command bot (Node.js, ESM, `node:sqlite`). Two runtime
+Fable — a Discord.js v14 prefix-command bot (Node.js, ESM, `node:sqlite`). Two runtime
 dependencies only: `discord.js`, `dotenv`. Zero-bloat is a deliberate architectural choice,
 not an oversight — do not add dependencies to solve problems Node's stdlib already solves.
 

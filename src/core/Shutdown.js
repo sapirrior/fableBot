@@ -34,13 +34,19 @@ export async function shutdown(client) {
     spamGuard.stopSpamSweeper();
   } catch (_) {}
 
-  // 3. Flush debounced config writes to disk
+  // 3. Stop backup scheduler
+  try {
+    const backup = container.resolve('backup');
+    backup.stop();
+  } catch (_) {}
+
+  // 4. Flush debounced config writes to disk
   try {
     const configService = container.resolve('config');
     configService.flush();
   } catch (_) {}
 
-  // 4. Destroy gateway connections and close DB
+  // 5. Destroy gateway connections and close DB
   if (client) {
     client.destroy();
   }

@@ -181,3 +181,15 @@ export function closeDb() {
     logger.warn('Connection closed.', 'Database');
   }
 }
+
+/**
+ * Performs a WAL checkpoint, flushing any pending WAL writes back into the
+ * main database file. Call before creating a file-level backup to ensure
+ * the .db file is a fully consistent snapshot.
+ */
+export function checkpoint() {
+  if (db) {
+    db.exec('PRAGMA wal_checkpoint(TRUNCATE);');
+  }
+}
+

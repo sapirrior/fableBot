@@ -79,4 +79,3 @@ class ConfigManager {
 }
 
 export const configManager = new ConfigManager();
-export const config = configManager.getAll(); // for backward compatibility/quick access

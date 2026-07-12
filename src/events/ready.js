@@ -1,6 +1,7 @@
 import { ActivityType } from 'discord.js';
 import { logger } from '../util/logger.js';
 import { configManager } from '../services/ConfigService.js';
+import { container } from '../core/ServiceContainer.js';
 
 function formatCount(num) {
   if (num >= 1_000_000_000_000) {
@@ -35,5 +36,10 @@ export default {
     });
 
     logger.info(`Status set to: Streaming "${statusText}"`, 'Client');
+
+    // Start the backup scheduler now that the client is fully connected
+    const backup = container.resolve('backup');
+    backup.start(client);
   }
 };
+

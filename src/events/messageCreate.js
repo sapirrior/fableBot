@@ -17,8 +17,8 @@ export default {
   name: 'messageCreate',
   once: false,
   async execute(client, message) {
-    // 1. Ignore bots, webhooks, Direct Messages, or execution if shutting down
-    if (message.author.bot || !message.guild || getShuttingDownStatus()) return;
+    // 1. Ignore bots, webhooks, Direct Messages, or execution if shutting down (includes guild availability check)
+    if (message.author.bot || !message.guild || !message.guild.available || getShuttingDownStatus()) return;
 
     const content = message.content.trim();
     const prefix = configManager.get('prefix') || 'ah';
@@ -50,17 +50,20 @@ export default {
     const cmd = registry.get(commandName);
     if (!cmd) return;
 
-    // 5. Apply reply wrappers (Pings suppression - D9 Fix)
-    applyMentionSafeReply(message);
-
-    // 6. Build Context lazily via Factory (D2 Fix)
-    const ctx = buildContext();
-
-    // 7. Check bans, disables, and global spam
-    const isAllowed = await ban.check(ctx, message, cmd);
+    // 5. Check bans, disables, and global spam (Done before object allocations for efficiency)
+    const isAllowed = await ban.check(message, cmd);
     if (!isAllowed) return;
 
-    // 8. Ensure user exists in database
+    // 6. Check declarative permissions check
+    if (cmd.permissions?.length) {
+      const missing = cmd.permissions.filter(p => !message.member.permissions.has(p));
+      if (missing.length) {
+        sender.error(message, ", you don't have permission to use this command! >:c");
+        return;
+      }
+    }
+
+    // 7. Ensure user exists in database
     try {
       query('upsertUser').run(message.author.id);
     } catch (e) {
@@ -68,18 +71,24 @@ export default {
       return;
     }
 
-    // 9. Cooldown check
+    // 8. Cooldown check
     const cooldownMs = cmd.cooldown ?? 3000;
     const cooldownLeft = checkCooldown(message.author.id, cmd.name, cooldownMs);
     if (cooldownLeft > 0) {
       const waitSec = (cooldownLeft / 1000).toFixed(1);
-      message.reply(`⏳ **| ${message.author.username}**, slow down! Wait **${waitSec}s** for \`${cmd.name}\`.`)
+      sender.reply(message, '⏳', `, slow down! Wait **${waitSec}s** for \`${cmd.name}\`.`)
         .then(msg => setTimeout(() => msg.delete().catch(() => {}), 4000))
         .catch(() => {});
       return;
     }
 
-    // 10. Execute command with structured error recovery
+    // 9. Apply reply wrappers (Pings suppression - D9 Fix)
+    applyMentionSafeReply(message);
+
+    // 10. Build Context lazily via Factory (D2 Fix)
+    const ctx = buildContext();
+
+    // 11. Execute command with structured error recovery
     try {
       await cmd.execute(client, message, args, ctx);
     } catch (err) {

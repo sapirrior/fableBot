@@ -11,12 +11,12 @@
   {"id": "cockroach",      "name": "Cockroach",      "emoji": "🪳", "rarity": "uncommon",  "value": 30,   "weight": 120},
   {"id": "worm",           "name": "Earthworm",      "emoji": "🪱", "rarity": "uncommon",  "value": 25,   "weight": 110},
   {"id": "butterfly",      "name": "Butterfly",      "emoji": "🦋", "rarity": "rare",      "value": 100,  "weight": 70},
-  {"id": "dragonfly",      "name": "Dragonfly",      "emoji": "🌀", "rarity": "rare",      "value": 120,  "weight": 60},
+  {"id": "dragonfly",      "name": "Dragonfly",      "emoji": "",   "rarity": "rare",      "value": 120,  "weight": 60},
   {"id": "spider",         "name": "Spider",         "emoji": "🕷️", "rarity": "rare",      "value": 150,  "weight": 50},
-  {"id": "centipede",      "name": "Centipede",      "emoji": "🐍", "rarity": "rare",      "value": 130,  "weight": 55},
-  {"id": "praying_mantis", "name": "Praying Mantis", "emoji": "🌿", "rarity": "epic",      "value": 400,  "weight": 20},
+  {"id": "centipede",      "name": "Centipede",      "emoji": "",   "rarity": "rare",      "value": 130,  "weight": 55},
+  {"id": "praying_mantis", "name": "Praying Mantis", "emoji": "",   "rarity": "epic",      "value": 400,  "weight": 20},
   {"id": "scorpion",       "name": "Scorpion",       "emoji": "🦂", "rarity": "epic",      "value": 500,  "weight": 15},
-  {"id": "moth",           "name": "Luna Moth",      "emoji": "🌙", "rarity": "epic",      "value": 600,  "weight": 10},
-  {"id": "cicada",         "name": "Golden Cicada",  "emoji": "🔔", "rarity": "legendary", "value": 2000, "weight": 3},
-  {"id": "atlas_beetle",   "name": "Atlas Beetle",   "emoji": "👑", "rarity": "legendary", "value": 2500, "weight": 2}
+  {"id": "moth",           "name": "Luna Moth",      "emoji": "",   "rarity": "epic",      "value": 600,  "weight": 10},
+  {"id": "cicada",         "name": "Golden Cicada",  "emoji": "",   "rarity": "legendary", "value": 2000, "weight": 3},
+  {"id": "atlas_beetle",   "name": "Atlas Beetle",   "emoji": "🪲", "rarity": "legendary", "value": 2500, "weight": 2}
 ]

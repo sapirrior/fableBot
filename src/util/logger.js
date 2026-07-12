@@ -43,6 +43,7 @@ export const logger = {
   },
 
   debug(msg, tag = 'Fable') {
+    if (process.env.LOG_LEVEL !== 'debug') return;
     const time = formatTime();
     console.log(`${COLORS.time}[${time}]${COLORS.reset} ${COLORS.debug}[DEBUG]${COLORS.reset} [${tag}] ${msg}`);
   }

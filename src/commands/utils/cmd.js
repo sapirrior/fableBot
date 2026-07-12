@@ -2,11 +2,16 @@ export default {
   name: 'cmd',
   aliases: [],
   cooldown: 3000,
+  adminBypass: true,
   description: 'Displays detailed info on a specific command.',
   example: ['cmd help', 'cmd ping'],
+  /**
+   * Execute cmd command.
+   * Note: Uses raw message.reply intentionally to output raw un-nested markdown block styling.
+   */
   async execute(client, message, args, ctx) {
     const { prefix } = ctx.config;
-    const { registry } = await import('../../handlers/commandHandler.js');
+    const { registry } = ctx;
 
     if (!args.length) {
       return ctx.sender.error(message, `, please specify a command name! Example: \`${prefix} cmd help\``);

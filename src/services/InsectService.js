@@ -42,4 +42,3 @@ class InsectService {
 }
 
 export const insectService = new InsectService();
-export default insectService;

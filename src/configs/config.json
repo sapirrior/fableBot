@@ -6,5 +6,7 @@
   "dailyRewardCoins": 250,
   "catchCooldownMs": 10000,
   "currencyName": "⌬",
-  "statusMessage": "? butterflies"
+  "statusMessage": "? butterflies",
+  "backupChannelId": "1471855331616231591",
+  "backupIntervalMs": 21600000
 }

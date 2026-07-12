@@ -1,23 +1,18 @@
+import { CATEGORY_META } from '../../configs/categories.js';
+
 export default {
   name: 'help',
   aliases: ['h', 'commands', 'cmds'],
   cooldown: 3000,
+  adminBypass: true,
   description: 'Displays the list of commands.',
   example: ['help'],
   async execute(client, message, args, ctx) {
     const { prefix } = ctx.config;
-    const { registry } = await import('../../handlers/commandHandler.js');
+    const { registry } = ctx;
 
     // --- Display all commands dynamically ---
     const uniqueCmds = Array.from(new Set(registry.values()));
-
-    // Define category mappings and order
-    const categoryMapping = {
-      social: { name: '🎭 Social', order: 1 },
-      economy: { name: '💰 Economy', order: 2 },
-      insects: { name: '🌿 Insects', order: 3 },
-      utils: { name: '🔧 Utility', order: 4 }
-    };
 
     // Group commands
     const grouped = {};
@@ -33,9 +28,9 @@ export default {
     const fields = Object.keys(grouped)
       .map(cat => ({
         key: cat,
-        name: categoryMapping[cat]?.name ?? `📁 ${cat.charAt(0).toUpperCase() + cat.slice(1)}`,
+        name: CATEGORY_META[cat]?.name ?? `📁 ${cat.charAt(0).toUpperCase() + cat.slice(1)}`,
         value: grouped[cat].join('  '),
-        order: categoryMapping[cat]?.order ?? 99
+        order: CATEGORY_META[cat]?.order ?? 99
       }))
       .sort((a, b) => a.order - b.order)
       .map(({ name, value }) => ({ name, value, inline: false }));
