@@ -59,30 +59,13 @@ export default {
 
     const row = new ActionRowBuilder().addComponents(selectMenu);
 
-    // Default Embed view (overview of categories)
-    const grouped = {};
-    for (const cmd of uniqueCmds) {
-      const cat = cmd.category || 'utils';
-      if (!grouped[cat]) grouped[cat] = [];
-      grouped[cat].push(`\`/${cmd.data.name}\``);
-    }
-
-    const fields = Object.keys(grouped)
-      .map(cat => ({
-        name: CATEGORY_META[cat]?.name ?? `📁 ${cat.charAt(0).toUpperCase() + cat.slice(1)}`,
-        value: grouped[cat].join('  '),
-        order: CATEGORY_META[cat]?.order ?? 99
-      }))
-      .sort((a, b) => a.order - b.order)
-      .map(({ name, value }) => ({ name, value, inline: false }));
-
+    // Default Embed view (simple welcome with select instructions)
     const defaultEmbed = {
       author: {
-        name: 'Fable Command Index',
+        name: 'Command Index',
         icon_url: interaction.user.displayAvatarURL({ size: 64 })
       },
-      description: `Welcome to Fable! Run slash commands (/) anywhere.\n\nUse the dropdown below to explore specific command groups and descriptions.`,
-      fields
+      description: `Welcome to Fable! Run slash commands (/) anywhere.\n\nUse the dropdown menu below to select a command category and view its list of commands.`
     };
 
     // 2. Send the non-ephemeral response with dropdown components
@@ -104,9 +87,11 @@ export default {
 
       const categoryDescription = formatCategoryCommands(selectedCategory);
 
+      const cleanName = meta.name.replace(/[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF]/g, '').trim();
+
       const updatedEmbed = {
         author: {
-          name: `${meta.name} Commands`,
+          name: `${cleanName} Commands`,
           icon_url: interaction.user.displayAvatarURL({ size: 64 })
         },
         description: `Use slash commands (/) for a faster experience!\n\n${categoryDescription}`,
