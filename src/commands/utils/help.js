@@ -72,11 +72,13 @@ export default {
     const response = await interaction.reply({
       embeds: [{ ...defaultEmbed, color: parseInt((ctx.config.embedColor || '6D3CCF').replace('#', ''), 16) }],
       components: [row],
-      fetchReply: true
+      withResponse: true
     });
 
+    const responseMsg = response.resource?.message;
+
     // 3. Collect StringSelectMenu selection interactions locally
-    const collector = response.createMessageComponentCollector({
+    const collector = responseMsg.createMessageComponentCollector({
       filter: (i) => i.customId === 'help_category_select' && i.user.id === interaction.user.id,
       time: 60000 // 1 minute timeout
     });
