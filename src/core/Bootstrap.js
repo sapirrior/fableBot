@@ -4,13 +4,12 @@
  */
 import { Client, GatewayIntentBits, Options } from 'discord.js';
 import { initDb, closeDb } from '../db/index.js';
-import { loadCommands } from '../handlers/commandHandler.js';
+import { loadSlashCommands } from '../handlers/slashCommandHandler.js';
 import { loadEvents } from '../handlers/eventHandler.js';
 import { startCooldownSweeper } from '../util/cooldown.js';
 import { logger } from '../util/logger.js';
 import { configManager } from '../services/ConfigService.js';
 import { insectService } from '../services/InsectService.js';
-import { SpamGuardService } from '../services/SpamGuardService.js';
 import { backupService } from '../services/BackupService.js';
 import { emojiService } from '../services/EmojiService.js';
 import { container } from './ServiceContainer.js';
@@ -44,7 +43,6 @@ export async function bootstrap() {
   // 3. Register services to ServiceContainer
   container.register('config', configManager);
   container.register('insects', insectService);
-  container.register('spamGuard', SpamGuardService);
   container.register('backup', backupService);
   container.register('emojis', emojiService);
   logger.info('Registered services to ServiceContainer.', 'Bootstrap');
@@ -52,18 +50,15 @@ export async function bootstrap() {
   // 4. Start sweepers
   const config = configManager.getAll();
   startCooldownSweeper(config.cooldownSweepIntervalMs || 300000);
-  SpamGuardService.startSpamSweeper(config.cooldownSweepIntervalMs || 60000);
   logger.info('Auto-cleaning cache sweepers started.', 'Sweeper');
 
-  // 5. Load Command registry
-  await loadCommands();
+  // 5. Load Slash Command registry
+  await loadSlashCommands();
 
-  // 6. Build Client
+  // 6. Build Client with minimal intents (Guilds only is enough for slash commands)
   const client = new Client({
     intents: [
-      GatewayIntentBits.Guilds,
-      GatewayIntentBits.GuildMessages,
-      GatewayIntentBits.MessageContent
+      GatewayIntentBits.Guilds
     ],
     makeCache: Options.cacheWithLimits({
       MessageManager: 10,

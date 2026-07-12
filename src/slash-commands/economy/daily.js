@@ -1,11 +1,21 @@
+import { SlashCommandBuilder, ApplicationIntegrationType, InteractionContextType } from 'discord.js';
+
 export default {
-  name: 'daily',
-  aliases: ['d'],
+  data: new SlashCommandBuilder()
+    .setName('daily')
+    .setDescription('Claim your daily coin reward.')
+    .setIntegrationTypes([
+      ApplicationIntegrationType.GuildInstall,
+      ApplicationIntegrationType.UserInstall
+    ])
+    .setContexts([
+      InteractionContextType.Guild,
+      InteractionContextType.BotDM,
+      InteractionContextType.PrivateChannel
+    ]),
   cooldown: 5000,
-  description: 'Claim your daily coin reward.',
-  example: ['daily'],
-  async execute(client, message, args, ctx) {
-    const userId = message.author.id;
+  async execute(client, interaction, ctx) {
+    const userId = interaction.user.id;
     const now = Date.now();
 
     const dbUser = ctx.query('getUser').get(userId);
@@ -17,8 +27,8 @@ export default {
     if (timePassed < dailyCooldownMs) {
       const timeLeft = dailyCooldownMs - timePassed;
       return ctx.sender.error(
-        message, 
-        `, you already claimed your daily reward! Wait **${ctx.parse.formatTimeLeft(timeLeft)}**.`
+        interaction, 
+        `You already claimed your daily reward! Wait **${ctx.parse.formatTimeLeft(timeLeft)}**.`
       );
     }
 
@@ -38,10 +48,8 @@ export default {
       ctx.query('claimDaily').run(rewardCoins, now, streak, userId);
     });
 
-    return ctx.sender.reply(
-      message, 
-      '📆', 
-      `, you claimed your daily reward of **${ctx.fmt(rewardCoins)} ${currencyEmoji}**! Streak: **${streak}**`
-    );
+    return ctx.sender.reply(interaction, {
+      description: `📆 **|** You claimed your daily reward of **${ctx.fmt(rewardCoins)} ${currencyEmoji}**! Streak: **${streak}**`
+    });
   }
 };

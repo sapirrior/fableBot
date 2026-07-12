@@ -1,0 +1,72 @@
+/**
+ * interactionCreate event handler.
+ * Routes all slash command interactions and autocomplete interactions.
+ */
+import { slashRegistry } from '../handlers/slashCommandHandler.js';
+import { checkCooldown } from '../util/cooldown.js';
+import { query } from '../db/index.js';
+import { logger } from '../util/logger.js';
+import { buildContext } from '../runtime/CommandContext.js';
+import { getShuttingDownStatus } from '../core/Shutdown.js';
+import * as sender from '../util/sender.js';
+
+export default {
+  name: 'interactionCreate',
+  once: false,
+  async execute(client, interaction) {
+    // 1. Route autocomplete interactions
+    if (interaction.isAutocomplete()) {
+      const cmd = slashRegistry.get(interaction.commandName);
+      if (!cmd || typeof cmd.autocomplete !== 'function') return;
+      try {
+        await cmd.autocomplete(client, interaction);
+      } catch (err) {
+        logger.error(`Autocomplete error in /${interaction.commandName}:`, err, 'Interaction');
+      }
+      return;
+    }
+
+    // 2. We only care about chat input (slash) commands
+    if (!interaction.isChatInputCommand()) return;
+
+    // 3. Prevent execution during shutdowns
+    if (getShuttingDownStatus()) {
+      return sender.error(interaction, 'The bot is currently shutting down. Please try again later.');
+    }
+
+    // 4. Resolve the slash command from registry
+    const cmd = slashRegistry.get(interaction.commandName);
+    if (!cmd) {
+      return sender.error(interaction, 'This command was not found or is no longer registered.');
+    }
+
+    const userId = interaction.user.id;
+
+    // 5. Ensure the user row exists in the database
+    try {
+      query('upsertUser').run(userId);
+    } catch (err) {
+      logger.error(`Failed to upsert user ${userId}`, err, 'Interaction');
+      return sender.error(interaction, 'Failed to resolve user account metadata.');
+    }
+
+    // 6. User command cooldown checks
+    const cooldownMs = cmd.cooldown ?? 3000;
+    const cooldownLeft = checkCooldown(userId, cmd.data.name, cooldownMs);
+    if (cooldownLeft > 0) {
+      const waitSec = (cooldownLeft / 1000).toFixed(1);
+      return sender.error(interaction, `Slow down! Please wait **${waitSec}s** before using \`/${cmd.data.name}\` again.`);
+    }
+
+    // 7. Inject execution context
+    const ctx = buildContext();
+
+    // 8. Execute command with error safety wrapper
+    try {
+      await cmd.execute(client, interaction, ctx);
+    } catch (err) {
+      logger.error(`Error executing slash command: /${cmd.data.name}`, err, 'Interaction');
+      await sender.error(interaction, 'An error occurred while executing this command.');
+    }
+  }
+};

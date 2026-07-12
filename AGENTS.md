@@ -6,7 +6,7 @@
 
 ## Project
 
-Fable — a Discord.js v14 prefix-command bot (Node.js, ESM, `node:sqlite`). Two runtime
+Fable — a User-Installable Slash Command bot built using Discord.js v14 (Node.js, ESM, `node:sqlite`). Two runtime
 dependencies only: `discord.js`, `dotenv`. Zero-bloat is a deliberate architectural choice,
 not an oversight — do not add dependencies to solve problems Node's stdlib already solves.
 
@@ -23,12 +23,12 @@ There is no build step. This is plain ESM JavaScript, no TypeScript, no bundler.
 ## Architecture rules (non-negotiable)
 
 - **Services own state, events own sequencing.** Any cross-cutting capability (config,
-  spam-guard, bans, insects, sender) lives in `src/services/` as its own file with its own
-  exported functions. `src/events/messageCreate.js` only sequences calls — it must never grow
+  insects, sender) lives in `src/services/` as its own file with its own
+  exported functions. `src/events/interactionCreate.js` only sequences calls — it must never grow
   new util logic inline. If you're about to add a `Map`, a cache, or a new capability directly
   inside an event file, stop and put it in `src/services/` instead.
 - **New capability → 2 files, not 1 edit.** Add the new service file, then add one registration
-  line in `src/core/Bootstrap.js`. Do not wire new services into `messageCreate.js` directly.
+  line in `src/core/Bootstrap.js`. Do not wire new services into `interactionCreate.js` directly.
 - **Every unbounded in-memory `Map` must self-sweep.** Any cache keyed by user ID, channel ID,
   or guild ID must have an eviction/sweep mechanism (see `util/cooldown.js`'s
   `startCooldownSweeper` for the reference pattern) before it ships. A `Map` that only grows is
@@ -47,9 +47,7 @@ There is no build step. This is plain ESM JavaScript, no TypeScript, no bundler.
   existing style in `util/parse.js` and `util/cooldown.js` — copy that format exactly.
 - Errors always go through `util/logger.js` (`logger.error(msg, err, tag)`), never bare
   `console.log`/`console.error`.
-- User-facing replies always go through `util/sender.js` (`reply`, `error`, `embed`) to keep the
-  `**emoji | username**, content` format consistent. Never call `message.reply(...)` directly
-  from inside a command.
+- User-facing replies always go through `util/sender.js` (`reply`, `error`, `defer`) to maintain consistent embed formats. All responses are embed-only and support flag 64 (MessageFlags.Ephemeral) for private responses. Never call `interaction.reply(...)` or `interaction.followUp(...)` directly from inside a command unless referencing sender.js wrappers.
 
 ## Testing
 
@@ -58,18 +56,13 @@ There is no build step. This is plain ESM JavaScript, no TypeScript, no bundler.
 - Any change to a service with time-based behavior (sweepers, cooldowns, debounced writes) needs
   a test that simulates time passing, not just a happy-path call.
 - Before finishing a task: run `node --test`, then manually smoke-test by running `npm run dev`
-  and exercising `ping`, `help`, and whichever command you touched, in a real test guild.
+  and exercising `/ping`, `/help`, and whichever command you touched in a test server or DM.
 
 ## Boundaries — do not do these unless explicitly asked
 
-- Do not migrate prefix commands to slash commands. This is a deliberate product decision, not
-  an oversight.
+- Do not migrate slash commands back to prefix commands.
 - Do not introduce sharding, Redis, an ORM, or a bot framework (e.g., Sapphire). The two-dependency
   footprint is intentional.
-- Do not change embed copy, emoji, command names, or economy/gameplay numbers as a side effect of
-  an infra or refactor task. If a refactor requires touching a command file, preserve its
-  user-visible output byte-for-byte unless the task explicitly says otherwise.
-- Do not edit `package-lock.json` by hand.
 
 ## When stuck
 
