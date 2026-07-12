@@ -1,65 +1,72 @@
 # Fable (`fableBot`)
 
-Fable is a zero-bloat, high-performance User-Installable Slash Command Discord bot offering virtual currency economy features, daily reward progression, and coinflip games.
+Fable is a zero-bloat, high-performance User-Installable Slash Command Discord bot offering virtual currency economy, daily reward progression, and card/coin gambling games.
 
-## 🚀 Install Anywhere
-Fable is fully configured for Discord's **User-Installable Apps** context. Once installed to your account, you can invoke Fable's commands in **any server, Direct Message (DM), or private group chat** using slash commands (`/`).
+## Install Anywhere
 
----
-
-## 🎮 Command Guide
-
-* **/help**
-  -# Displays list of available command groups and detailed descriptions using an interactive selection menu.
-* **/balance**
-  -# Check your current virtual coin balance or view another user's balance.
-* **/daily**
-  -# Claim your daily coin reward and progress your streak.
-* **/give**
-  -# Transfer virtual coins securely to another player.
-* **/coinflip**
-  -# Gamble virtual coins in a cryptographically secure heads-or-tails flip.
-* **/avatar**
-  -# Retrieve and view high-resolution profile avatars for any user.
-* **/ping**
-  -# Inspect current gateway response latency.
+Fable is fully configured for Discord's **User-Installable Apps** context. Once installed to your account, you can invoke commands in **any server, DM, or private group chat** using slash commands (`/`).
 
 ---
 
-## 🛠️ Developer Setup & Self-Hosting
+## Command Guide
 
-If you are a developer looking to host Fable yourself:
+**Economy**
+* `/balance` — Check your coin balance or view another user's balance.
+* `/daily` — Claim your daily coin reward and progress your streak.
+* `/give` — Transfer coins securely to another player.
+
+**Gambling**
+* `/coinflip` — Gamble coins in a cryptographically secure heads-or-tails flip.
+* `/blackjack` — Play a hand of blackjack against the dealer. Hit or stand with buttons. Natural blackjack pays 1.5×.
+
+**Utility**
+* `/help` — Browse available commands by category using an interactive dropdown.
+* `/avatar` — View any user's full-resolution avatar.
+* `/ping` — Check current gateway latency.
+
+---
+
+## Developer Setup & Self-Hosting
 
 ### Prerequisites
 * Node.js `v24.0.0` or higher
-* SQLite
+* No external database required — uses `node:sqlite` (built into Node.js)
 
 ### Installation
-1. Clone the repository and install dependencies (only `discord.js` and `dotenv`):
+
+1. Clone and install dependencies:
    ```bash
+   git clone https://github.com/sapirrior/fableBot
+   cd fableBot
    npm install
    ```
-2. Create a `.env` file in the root directory:
+
+2. Create a `.env` file:
    ```env
    ENV=TEST
    TEST_TOKEN=your_test_bot_token
    DISCORD_TOKEN=your_production_bot_token
-   OWNER_ID=your_discord_id_here
-   ```
-3. Initialize configuration values in `src/configs/config.json`:
-   ```json
-   {
-     "currencyName": "⌬"
-   }
-   ```
-4. Startup scripts:
-   ```bash
-   npm start         # Run Fable (automatically registers slash commands dynamically)
-   npm run dev        # Run with hot-reloading active (--watch)
-   node --test          # Execute infrastructure validation tests
+   OWNER_ID=your_discord_id
    ```
 
-There is no build step. This is plain ESM JavaScript, no TypeScript, no bundler.
+3. Review `src/configs/config.json` for tunable values:
+   ```json
+   {
+     "currencyName": "⌬",
+     "dailyRewardCoins": 250,
+     "dailyCooldownMs": 79200000,
+     "backupChannelId": "your_channel_id"
+   }
+   ```
+
+4. Run:
+   ```bash
+   npm start          # run once
+   npm run dev        # run with --watch (auto-restart on file change)
+   node --test        # run infrastructure test suite
+   ```
+
+There is no build step. This is plain ESM JavaScript — no TypeScript, no bundler.
 
 ---
 
@@ -67,46 +74,56 @@ There is no build step. This is plain ESM JavaScript, no TypeScript, no bundler.
 
 ```
 src/
-├── fable.js               # thin bot lifecycle orchestrator
-├── index.js               # application entry point & process guard listeners
+├── fable.js                    # thin bot lifecycle orchestrator
+├── index.js                    # application entry point & process signal handlers
 ├── core/
-│   ├── Bootstrap.js       # startup sequencing & ServiceContainer initialization
-│   ├── ServiceContainer.js# dependency injector map
-│   └── Shutdown.js        # graceful process shutdowns & in-flight connection drains
+│   ├── Bootstrap.js            # startup sequencing & service registration
+│   ├── ServiceContainer.js     # minimal dependency injection map
+│   └── Shutdown.js             # graceful shutdown & in-flight drain
 ├── commands/
-│   ├── economy/           # user-installable economy slash commands
-│   ├── gambling/          # user-installable gambling slash commands
-│   └── utils/             # user-installable utility slash commands (ping, help, avatar)
+│   ├── economy/                # balance, daily, give
+│   ├── gambling/               # coinflip, blackjack
+│   └── utils/                  # ping, help, avatar
 ├── db/
-│   └── index.js           # SQLite setup, WAL settings, & nested savepoint transactions
+│   └── index.js                # SQLite setup, WAL, nested savepoint transactions
 ├── events/
-│   ├── interactionCreate.js # dynamic router for slash commands and autocomplete
-│   └── ready.js           # dynamic streaming status updater & command registration
+│   ├── interactionCreate.js    # slash command router
+│   └── ready.js                # emoji sync & command registration
 ├── handlers/
-│   ├── eventHandler.js    # dynamic events subscriber
-│   └── slashCommandHandler.js # dynamic slash commands mapper
+│   ├── eventHandler.js         # dynamic event loader
+│   └── slashCommandHandler.js  # dynamic command loader & JSON serializer
 ├── configs/
-│   ├── categories.js      # category metadata configuration helper
-│   ├── config.json        # bot configuration settings
-│   └── insets.json        # insect database definitions
+│   ├── categories.js           # help menu category metadata
+│   ├── config.json             # runtime configuration
+│   └── insets.json             # insect pool definitions
 ├── services/
-│   ├── BackupService.js   # in-memory database zip backup scheduler
-│   ├── ConfigService.js   # atomic read/write manager for config.json
-│   ├── EmojiService.js    # application custom emoji dynamic sync manager
-│   └── InsectService.js   # dynamic insets JSON query provider
+│   ├── BackupService.js        # in-memory gzip DB backup scheduler
+│   ├── BlackjackService.js     # in-memory BJ session store, card logic & embed builder
+│   ├── ConfigService.js        # atomic read/write manager for config.json
+│   ├── EmojiService.js         # application emoji sync & local cache
+│   └── InsectService.js        # tier-first weighted insect roll provider
 └── util/
-    ├── constants.js       # configuration constants & embed colors
-    ├── cooldown.js        # commands cooldown manager
-    ├── logger.js          # zero-dependency structured logger
-    └── sender.js          # interaction-aware embed response helper
+    ├── colors.js               # named embed color palette (COLORS.BRAND, GOLD, ROSE…)
+    ├── constants.js            # rarity colors, emoji indicators, helpers
+    ├── cooldown.js             # per-user command cooldown map with sweeper
+    ├── logger.js               # zero-dependency structured console logger
+    ├── parse.js                # amount parsing, user mention, time formatting
+    └── sender.js               # interaction-aware embed reply helper
 ```
+
+---
+
+## Architecture Notes
+
+- **Services own state.** Any capability that needs a `Map`, cache, or shared object lives in `src/services/`. Event files only sequence calls.
+- **Two dependencies.** `discord.js` and `dotenv`. Node's stdlib (`node:sqlite`, `node:crypto`, `node:zlib`) handles everything else.
+- **No memory leaks.** Every unbounded in-memory `Map` has a self-sweeping interval (cooldowns, blackjack sessions).
+- **Atomic config writes.** All config mutations go through `ConfigService` which writes to a temp file then renames — no partial writes.
+- **Embed color palette.** All colors are defined in `src/util/colors.js` as named constants matched to the bot's avatar palette.
 
 ---
 
 ## Development Guidelines
 
-- **For AI Agents**: See [AGENTS.md](AGENTS.md) for strict rules, hard boundaries, code styling, and architectural rules.
-- **For Humans**:
-  - Always write clean, vanilla ESM JavaScript (`import`/`export` and no bundler).
-  - Add new features as independent services under `src/services/` and register them inside `src/core/Bootstrap.js`.
-  - Always run `node --test` to ensure new changes do not break database transactions, config savers, or cache sweeping.
+- **For AI Agents**: See [AGENTS.md](AGENTS.md) for strict rules, hard limits, and conventions.
+- **For Humans**: Write clean ESM JavaScript. Add new features as services under `src/services/` and register them in `Bootstrap.js`. Always run `node --test` before pushing.

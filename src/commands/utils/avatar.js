@@ -1,4 +1,5 @@
 import { SlashCommandBuilder, ApplicationIntegrationType, InteractionContextType } from 'discord.js';
+import { COLORS } from '../../util/colors.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -6,26 +7,29 @@ export default {
     .setDescription("View a user's avatar image.")
     .setIntegrationTypes([
       ApplicationIntegrationType.GuildInstall,
-      ApplicationIntegrationType.UserInstall
+      ApplicationIntegrationType.UserInstall,
     ])
     .setContexts([
       InteractionContextType.Guild,
       InteractionContextType.BotDM,
-      InteractionContextType.PrivateChannel
+      InteractionContextType.PrivateChannel,
     ])
-    .addUserOption(option =>
-      option.setName('user')
+    .addUserOption(opt =>
+      opt.setName('user')
         .setDescription('The user whose avatar you want to view')
-        .setRequired(false)
+        .setRequired(false),
     ),
   cooldown: 3000,
   async execute(client, interaction, ctx) {
     const targetUser = interaction.options.getUser('user') || interaction.user;
-    const avatarUrl = targetUser.displayAvatarURL({ size: 1024, dynamic: true });
+    // dynamic:true was removed in discord.js v14 — omit it
+    const avatarUrl = targetUser.displayAvatarURL({ size: 1024 });
 
     return ctx.sender.reply(interaction, {
-      title: `${targetUser.username}'s Avatar`,
-      image: { url: avatarUrl }
+      color: COLORS.SOFT,
+      description: `**${targetUser.username}**`,
+      image: { url: avatarUrl },
     });
-  }
+  },
 };
+

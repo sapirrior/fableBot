@@ -23,7 +23,7 @@ There is no build step. This is plain ESM JavaScript, no TypeScript, no bundler.
 ## Architecture rules (non-negotiable)
 
 - **Services own state, events own sequencing.** Any cross-cutting capability (config,
-  insects, sender) lives in `src/services/` as its own file with its own
+  insects, blackjack sessions, sender) lives in `src/services/` as its own file with its own
   exported functions. `src/events/interactionCreate.js` only sequences calls — it must never grow
   new util logic inline. If you're about to add a `Map`, a cache, or a new capability directly
   inside an event file, stop and put it in `src/services/` instead.
@@ -31,8 +31,9 @@ There is no build step. This is plain ESM JavaScript, no TypeScript, no bundler.
   line in `src/core/Bootstrap.js`. Do not wire new services into `interactionCreate.js` directly.
 - **Every unbounded in-memory `Map` must self-sweep.** Any cache keyed by user ID, channel ID,
   or guild ID must have an eviction/sweep mechanism (see `util/cooldown.js`'s
-  `startCooldownSweeper` for the reference pattern) before it ships. A `Map` that only grows is
-  a memory leak — reject it in review, don't just note it.
+  `startCooldownSweeper` and `services/BlackjackService.js`'s `startBlackjackSweeper` for the
+  reference pattern) before it ships. A `Map` that only grows is a memory leak — reject it in
+  review, don't just note it.
 - **DB writes go through `db/index.js`'s `query()` / `transaction()` exports.** Never call
   `db.prepare()` or open a second `DatabaseSync` instance elsewhere. `transaction()` supports
   nesting via savepoints — safe to call from inside another `transaction()`.
@@ -47,11 +48,50 @@ There is no build step. This is plain ESM JavaScript, no TypeScript, no bundler.
   existing style in `util/parse.js` and `util/cooldown.js` — copy that format exactly.
 - Errors always go through `util/logger.js` (`logger.error(msg, err, tag)`), never bare
   `console.log`/`console.error`.
-- User-facing replies always go through `util/sender.js` (`reply`, `error`, `defer`) to maintain consistent embed formats. All responses are embed-only and support flag 64 (MessageFlags.Ephemeral) for private responses. Never call `interaction.reply(...)` or `interaction.followUp(...)` directly from inside a command unless referencing sender.js wrappers.
+- User-facing replies always go through `util/sender.js` (`reply`, `error`, `defer`) to maintain
+  consistent embed formats. All responses are embed-only and support flag 64
+  (MessageFlags.Ephemeral) for private responses. Never call `interaction.reply(...)` or
+  `interaction.followUp(...)` directly from inside a command unless referencing sender.js wrappers.
+- **Defer before async work.** Any command that performs a DB transaction or significant async
+  work before replying must call `await ctx.sender.defer(interaction)` first to prevent Discord's
+  3-second timeout from expiring silently. Only defer after all synchronous early-return
+  validation (so ephemeral errors still work without deferral).
+
+## Embed colors & text style
+
+All embed colors are defined as named constants in `src/util/colors.js`. **Never hardcode a hex
+color inside a command file.** Import `COLORS` and use the appropriate constant:
+
+| Constant | Use case |
+|---|---|
+| `COLORS.BRAND` | Default / neutral (auto-applied by `sender.reply`) |
+| `COLORS.SOFT` | Secondary info (ping, avatar) |
+| `COLORS.MINT` | Positive economy actions (daily, give) |
+| `COLORS.GOLD` | Gambling win, natural blackjack |
+| `COLORS.ROSE` | Gambling loss |
+| `COLORS.SLATE` | Tie / push / neutral game outcome |
+| `COLORS.CRIMSON` | Errors (auto-applied by `sender.error`) |
+| `COLORS.VOID` | Reserved for lore / dramatic embeds |
+
+Text formatting rules (enforced across all commands):
+- **No `emoji | text` prefix pattern.** Leading `🔹 | text` is banned — it is visual noise.
+- **Dynamic values in bold**: `**500 ⌬**`, not plain text.
+- **Command names in inline code**: `` `/daily` ``, not plain text.
+- **Balance and secondary data in footer**, not cluttering description.
+- **` · ` (middot) as separator** for inline metadata — never `|`.
+- Emoji use is capped at one per line, only where it adds semantic value.
+
+## Interaction lifetime rules
+
+- Commands with multi-step flows (e.g. blackjack) use Button collectors, not reaction collectors.
+  Collectors must have a finite `time` option — never open-ended.
+- On collector timeout: disable components, apply forfeit if applicable, do not prompt retry.
+- Settle order for gambling commands: **DB write → editReply → endSession** — never mark a
+  session done before the reply succeeds, or state can be lost on a transient Discord API error.
 
 ## Testing
 
-- Unit tests live alongside the module they test, or under `test/`, using `node --test`
+- Unit tests live alongside the module they test, or under `tests/`, using `node --test`
   (no Jest/Vitest — stdlib only).
 - Any change to a service with time-based behavior (sweepers, cooldowns, debounced writes) needs
   a test that simulates time passing, not just a happy-path call.
@@ -63,6 +103,7 @@ There is no build step. This is plain ESM JavaScript, no TypeScript, no bundler.
 - Do not migrate slash commands back to prefix commands.
 - Do not introduce sharding, Redis, an ORM, or a bot framework (e.g., Sapphire). The two-dependency
   footprint is intentional.
+- Do not use `dynamic: true` in `displayAvatarURL()` — it was removed in discord.js v14.
 
 ## When stuck
 
@@ -70,4 +111,3 @@ If a task is ambiguous (e.g., "harden the db layer" without specifics), ask a cl
 before writing code rather than guessing and producing a large diff. If `node --test` fails
 repeatedly for a reason unrelated to your change, stop and report it — don't disable or delete
 the failing test to make the suite green.
-

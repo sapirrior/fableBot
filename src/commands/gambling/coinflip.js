@@ -1,120 +1,97 @@
 import { SlashCommandBuilder, ApplicationIntegrationType, InteractionContextType } from 'discord.js';
 import { randomInt } from 'node:crypto';
+import { COLORS } from '../../util/colors.js';
 
-const maxBet = 250000;
+const MAX_BET = 250_000;
 
 export default {
   data: new SlashCommandBuilder()
     .setName('coinflip')
-    .setDescription('Flip a coin and gamble your coins! Choose heads or tails.')
+    .setDescription('Flip a coin and gamble your coins.')
     .setIntegrationTypes([
       ApplicationIntegrationType.GuildInstall,
-      ApplicationIntegrationType.UserInstall
+      ApplicationIntegrationType.UserInstall,
     ])
     .setContexts([
       InteractionContextType.Guild,
       InteractionContextType.BotDM,
-      InteractionContextType.PrivateChannel
+      InteractionContextType.PrivateChannel,
     ])
-    .addStringOption(option =>
-      option.setName('choice')
-        .setDescription('Choose heads or tails')
+    .addStringOption(opt =>
+      opt.setName('choice')
+        .setDescription('heads or tails')
         .setRequired(true)
         .addChoices(
-          { name: 'heads', value: 'h' },
-          { name: 'tails', value: 't' }
-        )
+          { name: 'Heads', value: 'h' },
+          { name: 'Tails', value: 't' },
+        ),
     )
-    .addStringOption(option =>
-      option.setName('amount')
-        .setDescription('Amount to bet (positive integer or "all")')
-        .setRequired(true)
+    .addStringOption(opt =>
+      opt.setName('amount')
+        .setDescription('Amount to bet (number or "all")')
+        .setRequired(true),
     ),
   cooldown: 5000,
-  async execute(client, interaction, ctx) {
-    const authorId = interaction.user.id;
-    const choice = interaction.options.getString('choice');
-    const rawAmountArg = interaction.options.getString('amount');
 
-    // Resolve bet amount
-    const parsed = ctx.parse.parseAmount(rawAmountArg);
+  async execute(client, interaction, ctx) {
+    const userId   = interaction.user.id;
+    const choice   = interaction.options.getString('choice');
+    const currency = ctx.config.currencyName || '⌬';
+    const parsed   = ctx.parse.parseAmount(interaction.options.getString('amount'));
 
     if (parsed.error) {
-      return ctx.sender.error(interaction, 'Please specify a valid amount of coins to bet!');
+      return ctx.sender.error(interaction, 'Please provide a valid bet amount (e.g. `500` or `all`).');
     }
 
-    // Get user's balance
-    const dbUser = ctx.query('getUser').get(authorId);
+    const dbUser  = ctx.query('getUser').get(userId);
     const balance = dbUser?.balance ?? 0;
 
-    let bet = parsed.value;
-    if (bet === 'all') {
-      bet = balance;
-    }
-
-    if (bet > maxBet) {
-      bet = maxBet;
-    }
+    let bet = parsed.value === 'all' ? balance : parsed.value;
+    if (bet > MAX_BET) bet = MAX_BET;
 
     if (bet <= 0) {
-      return ctx.sender.error(interaction, 'You cannot bet 0 or negative coins!');
+      return ctx.sender.error(interaction, 'You need at least **1 coin** to flip.');
     }
-
     if (balance < bet) {
       return ctx.sender.error(
-        interaction, 
-        `You do not have enough coins! You only have **${ctx.fmt(balance)} ${ctx.config.currencyName || '⌬'}**.`
+        interaction,
+        `You only have **${ctx.fmt(balance)} ${currency}** — not enough to bet **${ctx.fmt(bet)}**.`,
       );
     }
 
-    // Get custom application emojis or fallbacks
-    const coinflipEmoji = ctx.emoji('coinflip') || '🪙';
-    const blankEmoji = ctx.emoji('blank') || ' ';
-    const currencyName = ctx.config.currencyName || '⌬';
-
-    // Perform cryptographically secure coin flip (0 = tails, 1 = heads)
-    const resultSide = randomInt(0, 2); // returns 0 or 1
     const choseHeads = choice === 'h';
-    const won = (resultSide === 1 && choseHeads) || (resultSide === 0 && !choseHeads);
+    const choiceStr  = choseHeads ? 'heads' : 'tails';
 
-    // Apply outcome inside transaction
-    ctx.transaction(() => {
-      ctx.query('updateUserBalance').run(won ? bet : -bet, authorId);
-    });
+    // Cryptographically secure flip (0 = tails, 1 = heads)
+    const resultSide = randomInt(0, 2);
+    const won        = (resultSide === 1) === choseHeads;
+    const resultStr  = resultSide === 1 ? 'heads' : 'tails';
 
-    const sideText = resultSide === 1 ? 'heads' : 'tails';
-    const cleanUsername = interaction.user.username.replace(/[*_~`|]/g, '');
+    ctx.transaction(() => ctx.query('updateUserBalance').run(won ? bet : -bet, userId));
+    const newBalance = won ? balance + bet : balance - bet;
 
-    // Step 1: Send spinning coin message (non-ephemeral by default)
+    // Initial "spinning" embed
     await ctx.sender.reply(interaction, {
-      description: `🪙 **|** You bet **${ctx.fmt(bet)} ${currencyName}** and chose **${choseHeads ? 'heads' : 'tails'}**...\n${blankEmoji} **|** The coin spins... ${coinflipEmoji}`
+      color: COLORS.SOFT,
+      description: `You bet **${ctx.fmt(bet)} ${currency}** on **${choiceStr}** — the coin is in the air...`,
     });
 
-    // Step 2: Edit after 2 seconds to show result
+    // Reveal after 2 s
     setTimeout(async () => {
       try {
-        if (won) {
-          const newBalance = balance + bet;
-          await interaction.editReply({
-            embeds: [{
-              color: ctx.sender.reply.color, // uses base embed color
-              description: `**🪙 | ${cleanUsername}**, you bet **${ctx.fmt(bet)} ${currencyName}** and chose **${choseHeads ? 'heads' : 'tails'}**...\n` +
-                `${blankEmoji} **|** The coin landed on **${sideText}**! You won **${ctx.fmt(bet * 2)} ${currencyName}**! (New Balance: **${ctx.fmt(newBalance)}**)`
-            }]
-          });
-        } else {
-          const newBalance = balance - bet;
-          await interaction.editReply({
-            embeds: [{
-              color: ctx.sender.reply.color, // uses base embed color
-              description: `**🪙 | ${cleanUsername}**, you bet **${ctx.fmt(bet)} ${currencyName}** and chose **${choseHeads ? 'heads' : 'tails'}**...\n` +
-                `${blankEmoji} **|** The coin landed on **${sideText}**! You lost it all... :c (New Balance: **${ctx.fmt(newBalance)}**)`
-            }]
-          });
-        }
-      } catch (err) {
-        // Safe catch in case message was deleted or interaction expired
-      }
+        const color = won ? COLORS.GOLD : COLORS.ROSE;
+        const outcome = won
+          ? `The coin landed **${resultStr}**. You won **+${ctx.fmt(bet)} ${currency}**.`
+          : `The coin landed **${resultStr}**. You lost **−${ctx.fmt(bet)} ${currency}**.`;
+
+        await interaction.editReply({
+          embeds: [{
+            color,
+            description: `You bet **${ctx.fmt(bet)} ${currency}** on **${choiceStr}** — ${outcome}`,
+            footer: { text: `Balance: ${ctx.fmt(newBalance)} ${currency}` },
+          }],
+        });
+      } catch { /* message deleted or interaction expired */ }
     }, 2000);
-  }
+  },
 };

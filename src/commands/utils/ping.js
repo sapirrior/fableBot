@@ -1,4 +1,5 @@
 import { SlashCommandBuilder, ApplicationIntegrationType, InteractionContextType } from 'discord.js';
+import { COLORS } from '../../util/colors.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -6,18 +7,19 @@ export default {
     .setDescription('Shows the bot latency in milliseconds.')
     .setIntegrationTypes([
       ApplicationIntegrationType.GuildInstall,
-      ApplicationIntegrationType.UserInstall
+      ApplicationIntegrationType.UserInstall,
     ])
     .setContexts([
       InteractionContextType.Guild,
       InteractionContextType.BotDM,
-      InteractionContextType.PrivateChannel
+      InteractionContextType.PrivateChannel,
     ]),
   cooldown: 5000,
   async execute(client, interaction, ctx) {
     const apiPing = Math.round(client.ws.ping);
     return ctx.sender.reply(interaction, {
-      description: `🏓 **|** Pong! Latency is **${apiPing}ms**`
+      color: COLORS.SOFT,
+      description: `Gateway latency: **${apiPing} ms**`,
     });
-  }
+  },
 };

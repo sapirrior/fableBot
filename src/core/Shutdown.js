@@ -28,7 +28,7 @@ export async function shutdown(client) {
   // 1. Command execution grace drain (250ms)
   await new Promise(resolve => setTimeout(resolve, 250));
 
-  // 3. Stop backup scheduler
+  // 2. Stop backup scheduler
   try {
     const backup = container.resolve('backup');
     backup.stop();

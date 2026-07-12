@@ -1,4 +1,5 @@
 import { SlashCommandBuilder, ApplicationIntegrationType, InteractionContextType } from 'discord.js';
+import { COLORS } from '../../util/colors.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -6,39 +7,43 @@ export default {
     .setDescription("Check your own or another user's coin balance.")
     .setIntegrationTypes([
       ApplicationIntegrationType.GuildInstall,
-      ApplicationIntegrationType.UserInstall
+      ApplicationIntegrationType.UserInstall,
     ])
     .setContexts([
       InteractionContextType.Guild,
       InteractionContextType.BotDM,
-      InteractionContextType.PrivateChannel
+      InteractionContextType.PrivateChannel,
     ])
-    .addUserOption(option =>
-      option.setName('user')
+    .addUserOption(opt =>
+      opt.setName('user')
         .setDescription('The user whose balance you want to check')
-        .setRequired(false)
+        .setRequired(false),
     ),
   cooldown: 3000,
   async execute(client, interaction, ctx) {
     const targetUser = interaction.options.getUser('user') || interaction.user;
-    
-    // Ensure target user is upserted in the database
     ctx.query('upsertUser').run(targetUser.id);
-    
-    const dbUser = ctx.query('getUser').get(targetUser.id);
-    const balance = dbUser?.balance ?? 0;
-    const currencyEmoji = ctx.config.currencyName || '⌬';
 
-    const cleanUsername = targetUser.username.replace(/[*_~`|]/g, '');
+    const dbUser   = ctx.query('getUser').get(targetUser.id);
+    const balance  = dbUser?.balance ?? 0;
+    const currency = ctx.config.currencyName || '⌬';
+    const isSelf   = targetUser.id === interaction.user.id;
 
-    if (targetUser.id === interaction.user.id) {
-      return ctx.sender.reply(interaction, {
-        description: `💵 **|** You have **${ctx.fmt(balance)} ${currencyEmoji}**`
-      });
-    } else {
-      return ctx.sender.reply(interaction, {
-        description: `💵 **|** **${cleanUsername}** has **${ctx.fmt(balance)} ${currencyEmoji}**`
-      });
-    }
-  }
+    const description = isSelf
+      ? `Your balance is **${ctx.fmt(balance)} ${currency}**.`
+      : `**${targetUser.username}** has **${ctx.fmt(balance)} ${currency}**.`;
+
+    const embed = isSelf
+      ? {
+          color: COLORS.BRAND,
+          description,
+          footer: { text: 'Use /daily to claim your next reward' },
+        }
+      : {
+          color: COLORS.BRAND,
+          description,
+        };
+
+    return ctx.sender.reply(interaction, embed);
+  },
 };

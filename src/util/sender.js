@@ -4,33 +4,31 @@
  * All bot responses are embed-based. Supports ephemeral replies via
  * flag 64 (MessageFlags.Ephemeral). Handles deferred/replied state
  * transparently so commands never need to worry about interaction lifecycle.
+ *
+ * Color:
+ *   - Default replies use COLORS.BRAND (purple).
+ *   - Errors always use COLORS.CRIMSON, always ephemeral.
+ *   - Commands that need a non-default color import COLORS and pass it as
+ *     embedOpts.color — sender will use it as-is.
  */
 import { MessageFlags } from 'discord.js';
-import { configManager } from '../services/ConfigService.js';
-
-/**
- * Resolves the embed base color from config.
- * @returns {number}
- */
-function getColor() {
-  const raw = configManager.get('embedColor') || '6D3CCF';
-  return parseInt(raw.replace('#', ''), 16);
-}
+import { COLORS } from './colors.js';
 
 /**
  * Sends or edits a reply safely regardless of interaction state.
- * Automatically applies the configured embed color.
+ * Applies COLORS.BRAND by default; pass embedOpts.color to override.
  *
- * @param {ChatInputCommandInteraction} interaction
- * @param {object}  embedOpts  - Raw embed data (description, title, fields, author, footer, thumbnail)
- * @param {boolean} [ephemeral=false] - Whether to use flag 64
+ * @param {import('discord.js').ChatInputCommandInteraction} interaction
+ * @param {object}  embedOpts  - Raw embed data: description, title, fields,
+ *                               author, footer, thumbnail, color (optional)
+ * @param {boolean} [ephemeral=false]
  * @returns {Promise}
  */
 export async function reply(interaction, embedOpts, ephemeral = false) {
-  const embed = { color: getColor(), ...embedOpts };
+  const embed = { color: COLORS.BRAND, ...embedOpts };
   const payload = {
     embeds: [embed],
-    ...(ephemeral ? { flags: MessageFlags.Ephemeral } : {})
+    ...(ephemeral ? { flags: MessageFlags.Ephemeral } : {}),
   };
 
   if (interaction.deferred || interaction.replied) {
@@ -41,29 +39,26 @@ export async function reply(interaction, embedOpts, ephemeral = false) {
 
 /**
  * Sends an ephemeral error embed reply.
- * Always uses flag 64 so errors never pollute channels.
+ * Always COLORS.CRIMSON, always flag 64 — never pollutes the channel.
  *
- * @param {ChatInputCommandInteraction} interaction
- * @param {string} description - Error message text
+ * @param {import('discord.js').ChatInputCommandInteraction} interaction
+ * @param {string} description
  * @returns {Promise}
  */
 export async function error(interaction, description) {
-  return reply(interaction, {
-    description,
-    color: 0xED4245
-  }, true);
+  return reply(interaction, { color: COLORS.CRIMSON, description }, true);
 }
 
 /**
  * Defers the reply with an optional ephemeral flag.
  * Use before any async work to prevent the 3-second timeout.
  *
- * @param {ChatInputCommandInteraction} interaction
+ * @param {import('discord.js').ChatInputCommandInteraction} interaction
  * @param {boolean} [ephemeral=false]
  * @returns {Promise}
  */
 export async function defer(interaction, ephemeral = false) {
   return interaction.deferReply({
-    ...(ephemeral ? { flags: MessageFlags.Ephemeral } : {})
+    ...(ephemeral ? { flags: MessageFlags.Ephemeral } : {}),
   });
 }

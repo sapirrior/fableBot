@@ -11,6 +11,7 @@ import { AttachmentBuilder } from 'discord.js';
 import { logger } from '../util/logger.js';
 import { configManager } from './ConfigService.js';
 import { checkpoint } from '../db/index.js';
+import { COLORS } from '../util/colors.js';
 
 const DB_PATH = resolve('./src/db/database/fable_data.db');
 
@@ -105,9 +106,7 @@ class BackupService {
 
       const attachment = new AttachmentBuilder(compressed, { name: filename });
 
-      // Derive color the same way sender.embed() does
-      const configColor = configManager.get('embedColor') || '6D3CCF';
-      const color = parseInt(configColor.replace('#', ''), 16);
+      const color = COLORS.BRAND;
 
       const unixSeconds = Math.floor(now.getTime() / 1000);
 

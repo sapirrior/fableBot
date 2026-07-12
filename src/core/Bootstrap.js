@@ -7,6 +7,7 @@ import { initDb, closeDb } from '../db/index.js';
 import { loadSlashCommands } from '../handlers/slashCommandHandler.js';
 import { loadEvents } from '../handlers/eventHandler.js';
 import { startCooldownSweeper } from '../util/cooldown.js';
+import { startBlackjackSweeper } from '../services/BlackjackService.js';
 import { logger } from '../util/logger.js';
 import { configManager } from '../services/ConfigService.js';
 import { insectService } from '../services/InsectService.js';
@@ -50,6 +51,7 @@ export async function bootstrap() {
   // 4. Start sweepers
   const config = configManager.getAll();
   startCooldownSweeper(config.cooldownSweepIntervalMs || 300000);
+  startBlackjackSweeper();
   logger.info('Auto-cleaning cache sweepers started.', 'Sweeper');
 
   // 5. Load Slash Command registry
