@@ -27,6 +27,12 @@ class BackupService {
   start(client) {
     this.stop();
 
+    // Only run backups if environment is explicitly set to PRODUCTION
+    if (process.env.ENV !== 'PRODUCTION') {
+      logger.info('Skipping backup scheduler initialization (not in PRODUCTION mode).', 'BackupService');
+      return;
+    }
+
     const intervalMs = configManager.get('backupIntervalMs') || 21600000;
 
     // Run once immediately so the first backup doesn't wait a full interval
