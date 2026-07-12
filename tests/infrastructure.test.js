@@ -11,9 +11,12 @@ import { insectService } from '../src/services/InsectService.js';
 import { initDb, closeDb, transaction } from '../src/db/index.js';
 import { buildContext } from '../src/runtime/CommandContext.js';
 
+import { emojiService } from '../src/services/EmojiService.js';
+
 // Pre-register services to the container for tests
 container.register('config', configManager);
 container.register('insects', insectService);
+container.register('emojis', emojiService);
 
 test('SpamGuardService - rate limit tracking and cleaning', async (t) => {
   const userId = 'test_user_123';
@@ -100,4 +103,5 @@ test('CommandContext - context factory shape matches expectations', (t) => {
   assert.ok(ctx.hasOwnProperty('fmt'));
   assert.ok(ctx.hasOwnProperty('getInsect'));
   assert.ok(ctx.hasOwnProperty('rollInsect'));
+  assert.ok(ctx.hasOwnProperty('emoji'));
 });

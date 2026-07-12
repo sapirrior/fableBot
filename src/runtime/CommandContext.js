@@ -16,6 +16,7 @@ import { registry } from '../handlers/commandHandler.js';
 export function buildContext() {
   const configService = container.resolve('config');
   const insectService = container.resolve('insects');
+  const emojiService = container.resolve('emojis');
 
   return {
     get config() {
@@ -32,6 +33,7 @@ export function buildContext() {
     registry,
     fmt: (n) => Number(n).toLocaleString('en-US'),
     getInsect: (id) => insectService.getById(id),
-    rollInsect: () => insectService.rollInsect()
+    rollInsect: () => insectService.rollInsect(),
+    emoji: (name) => emojiService.get(name)
   };
 }

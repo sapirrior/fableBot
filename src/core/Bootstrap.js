@@ -12,6 +12,7 @@ import { configManager } from '../services/ConfigService.js';
 import { insectService } from '../services/InsectService.js';
 import { SpamGuardService } from '../services/SpamGuardService.js';
 import { backupService } from '../services/BackupService.js';
+import { emojiService } from '../services/EmojiService.js';
 import { container } from './ServiceContainer.js';
 
 /**
@@ -42,6 +43,7 @@ export async function bootstrap() {
   container.register('insects', insectService);
   container.register('spamGuard', SpamGuardService);
   container.register('backup', backupService);
+  container.register('emojis', emojiService);
   logger.info('Registered services to ServiceContainer.', 'Bootstrap');
 
   // 4. Start sweepers

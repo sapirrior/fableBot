@@ -40,6 +40,10 @@ export default {
     // Start the backup scheduler now that the client is fully connected
     const backup = container.resolve('backup');
     backup.start(client);
+
+    // Sync bot application custom emojis on boot
+    const emojis = container.resolve('emojis');
+    emojis.syncEmojis(client).catch(() => {});
   }
 };
 
