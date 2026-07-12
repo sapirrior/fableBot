@@ -28,10 +28,11 @@ Example:
   process.exit(1);
 }
 
-// Select token — defaults to DISCORD_TOKEN unless requested
+// Select token based on flags and ENV status
+const isTestEnv = process.env.ENV === 'TEST';
 const token = useProd === 'true' || useProd === 'prod' 
-  ? process.env.PRODUCTION_TOKEN 
-  : process.env.DISCORD_TOKEN;
+  ? process.env.DISCORD_TOKEN // DISCORD_TOKEN is now our Production Token
+  : (isTestEnv ? process.env.TEST_TOKEN : process.env.DISCORD_TOKEN);
 
 if (!token?.trim()) {
   logger.error('No valid token found in environment configuration.', null, 'EmojiUploader');
