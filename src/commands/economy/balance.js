@@ -13,7 +13,7 @@ export default {
     
     const dbUser = ctx.query('getUser').get(targetUser.id);
     const balance = dbUser?.balance ?? 0;
-    const currencyEmoji = ctx.emoji('logo') || ctx.config.currencyName || '⌬';
+    const currencyEmoji = ctx.config.currencyName || '⌬';
 
     const cleanUsername = targetUser.username.replace(/[*_~`|]/g, '');
 

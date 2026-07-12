@@ -23,7 +23,7 @@ export default {
     }
 
     const rewardCoins = ctx.config.dailyRewardCoins || 250;
-    const currencyEmoji = ctx.emoji('logo') || ctx.config.currencyName || '⌬';
+    const currencyEmoji = ctx.config.currencyName || '⌬';
 
     // Calculate streak (reset if more than 48 hours passed)
     let streak = dbUser?.daily_streak ?? 0;

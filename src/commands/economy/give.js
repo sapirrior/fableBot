@@ -46,7 +46,7 @@ export default {
       return ctx.sender.error(message, `, you do not have enough coins! You only have **${ctx.fmt(senderBalance)}**.`);
     }
 
-    const currencyEmoji = ctx.emoji('logo') || ctx.config.currencyName || '⌬';
+    const currencyEmoji = ctx.config.currencyName || '⌬';
     const cleanUsername = targetUser.username.replace(/[*_~`|]/g, '');
 
     // Transaction to safely transfer the balance
