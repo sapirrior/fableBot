@@ -1,37 +1,44 @@
 # Fable (`fableBot`)
 
-A zero-bloat, high-performance User-Installable Slash Command Discord bot built on Node.js, ESM, and `node:sqlite`. 
+Fable is a zero-bloat, high-performance User-Installable Slash Command Discord bot offering virtual currency economy features, daily reward progression, and coinflip games.
 
-This bot is designed with strict minimalist principles and follows the **Open/Closed Principle (OCP)** architecture, where new capabilities are introduced as decoupled services.
-
----
-
-## Features
-
-- **Dynamic Slash Command Loading**: Commands are dynamically registered from directories inside `src/commands/` and registered automatically with the Discord API on startup.
-- **User-Installable Contexts**: Fully configured for User Installation contexts (`integration_types` + `contexts`), allowing commands to be run anywhere across servers and DMs.
-- **Zero-Dependency Structured Logger**: Lightweight color-coded console logs and error stack traces. No third-party loggers needed.
-- **Unified Config Service**: Atomic writes (temp-write and rename) to `config.json` with dynamic config debouncing (500ms delay) to prevent disk I/O collision.
-- **Nested Database Transactions**: `node:sqlite` transaction compose wrapper equipped with SAVEPOINT counters for nested SQLite transactions.
-- **In-Memory Gzip Backups**: Periodically runs WAL checkpoints, reads the database file into memory, compresses it to gzip, and posts it as an attachment to a backup Discord channel.
-- **Embed-Only Format**: Safe, clean responses structured solely around modern discord embeds utilizing `sender.js` helper wrappers.
+## 🚀 Install Anywhere
+Fable is fully configured for Discord's **User-Installable Apps** context. Once installed to your account, you can invoke Fable's commands in **any server, Direct Message (DM), or private group chat** using slash commands (`/`).
 
 ---
 
-## Getting Started
+## 🎮 Command Guide
+
+* **/help**
+  -# Displays list of available command groups and detailed descriptions using an interactive selection menu.
+* **/balance**
+  -# Check your current virtual coin balance or view another user's balance.
+* **/daily**
+  -# Claim your daily coin reward and progress your streak.
+* **/give**
+  -# Transfer virtual coins securely to another player.
+* **/coinflip**
+  -# Gamble virtual coins in a cryptographically secure heads-or-tails flip.
+* **/avatar**
+  -# Retrieve and view high-resolution profile avatars for any user.
+* **/ping**
+  -# Inspect current gateway response latency.
+
+---
+
+## 🛠️ Developer Setup & Self-Hosting
+
+If you are a developer looking to host Fable yourself:
 
 ### Prerequisites
-
-- Node.js `v24.0.0` or higher
-- SQLite
+* Node.js `v24.0.0` or higher
+* SQLite
 
 ### Installation
-
-1. Clone the repository and install runtime dependencies (only `discord.js` and `dotenv`):
+1. Clone the repository and install dependencies (only `discord.js` and `dotenv`):
    ```bash
    npm install
    ```
-
 2. Create a `.env` file in the root directory:
    ```env
    ENV=TEST
@@ -39,24 +46,18 @@ This bot is designed with strict minimalist principles and follows the **Open/Cl
    DISCORD_TOKEN=your_production_bot_token
    OWNER_ID=your_discord_id_here
    ```
-
-3. Initialize settings in `src/configs/config.json`:
+3. Initialize configuration values in `src/configs/config.json`:
    ```json
    {
-     "currencyName": "⌬",
-     "statusMessage": "with ? butterflies"
+     "currencyName": "⌬"
    }
    ```
-
----
-
-## Commands
-
-```bash
-npm start         # Run the bot once (will auto-register slash commands)
-npm run dev        # Run with auto-restart on file changes (--watch)
-node --test          # Run the built-in Node test suite (infrastructure validation)
-```
+4. Startup scripts:
+   ```bash
+   npm start         # Run Fable (automatically registers slash commands dynamically)
+   npm run dev        # Run with hot-reloading active (--watch)
+   node --test          # Execute infrastructure validation tests
+   ```
 
 There is no build step. This is plain ESM JavaScript, no TypeScript, no bundler.
 
