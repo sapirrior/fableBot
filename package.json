@@ -11,6 +11,8 @@
     "dev": "node --watch src/index.js",
     "test": "node --test"
   },
+  "author": "Nolan Stark",
+  "license": "AGPL-3.0",
   "dependencies": {
     "discord.js": "^14.26.5",
     "dotenv": "^16.4.5"
