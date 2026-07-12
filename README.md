@@ -8,7 +8,7 @@ This bot is designed with strict minimalist principles and follows the **Open/Cl
 
 ## Features
 
-- **Dynamic Slash Command Loading**: Commands are dynamically registered from directories inside `src/slash-commands/` and registered automatically with the Discord API on startup.
+- **Dynamic Slash Command Loading**: Commands are dynamically registered from directories inside `src/commands/` and registered automatically with the Discord API on startup.
 - **User-Installable Contexts**: Fully configured for User Installation contexts (`integration_types` + `contexts`), allowing commands to be run anywhere across servers and DMs.
 - **Zero-Dependency Structured Logger**: Lightweight color-coded console logs and error stack traces. No third-party loggers needed.
 - **Unified Config Service**: Atomic writes (temp-write and rename) to `config.json` with dynamic config debouncing (500ms delay) to prevent disk I/O collision.
@@ -72,7 +72,7 @@ src/
 │   ├── Bootstrap.js       # startup sequencing & ServiceContainer initialization
 │   ├── ServiceContainer.js# dependency injector map
 │   └── Shutdown.js        # graceful process shutdowns & in-flight connection drains
-├── slash-commands/
+├── commands/
 │   ├── economy/           # user-installable economy slash commands
 │   ├── gambling/          # user-installable gambling slash commands
 │   └── utils/             # user-installable utility slash commands (ping, help, avatar)

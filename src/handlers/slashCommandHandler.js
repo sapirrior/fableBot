@@ -15,14 +15,14 @@ export const slashRegistry = new Map();
  * @returns {Promise<void>}
  */
 export async function loadSlashCommands() {
-  const baseDir = resolve('./src/slash-commands');
+  const baseDir = resolve('./src/commands');
   let dirs = [];
 
   try {
     const contents = await readdir(baseDir, { withFileTypes: true });
     dirs = contents.filter(d => d.isDirectory()).map(d => d.name);
   } catch (err) {
-    logger.error('Failed to read slash-commands directory', err, 'SlashHandler');
+    logger.error('Failed to read commands directory', err, 'SlashHandler');
     return;
   }
 
@@ -48,7 +48,7 @@ export async function loadSlashCommands() {
         slashRegistry.set(cmd.data.name, cmd);
       }
     } catch (err) {
-      logger.warn(`Could not load slash-commands/${dir}: ${err.message}`, 'SlashHandler');
+      logger.warn(`Could not load commands/${dir}: ${err.message}`, 'SlashHandler');
     }
   }
 
