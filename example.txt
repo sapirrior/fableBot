@@ -1,0 +1,20 @@
+> Our [website](https://dankmemer.lol) contains lots of resources to get you going in our bot!
+> Try using slash commands (/) for a faster experience!
+
+**pls achievements** <:dms:1268264437576368241>
+-# View your progress towards achievements to flex and earn rewards.
+
+**pls advancements** <:dms:1268264437576368241>
+-# Includes prestige, omega, upgrades, level rewards, and vote rewards.
+
+**pls adventure** <:dms:1268264437576368241>
+-# Exchange adventure tickets to go on exciting adventures for unique rewards!
+
+**pls badges** <:dms:1268264437576368241>
+-# View and manage your badges.
+
+**pls balance** <:dms:1268264437576368241>
+-# See someone's balance. Pocket, bank, net worth, and more.
+
+**pls beg** <:dms:1268264437576368241>
+-# Beg for coins to help bolster your pocket balance.
