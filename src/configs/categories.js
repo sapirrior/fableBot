@@ -4,8 +4,8 @@
  * @type {Record<string, { name: string, order: number }>}
  */
 export const CATEGORY_META = {
-  social:  { name: '🎭 Social',  order: 1 },
-  economy: { name: '💰 Economy', order: 2 },
-  insects: { name: '🌿 Insects', order: 3 },
-  utils:   { name: '🔧 Utility', order: 4 },
+  economy:  { name: '💰 Economy',  order: 1 },
+  gambling: { name: '🎰 Gambling', order: 2 },
+  insects:  { name: '🌿 Insects',  order: 3 },
+  utils:    { name: '🔧 Utility',  order: 4 },
 };
