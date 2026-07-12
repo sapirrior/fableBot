@@ -22,9 +22,12 @@ import { container } from './ServiceContainer.js';
 export async function bootstrap() {
   logger.info('Initializing application bootstrap sequence...', 'Bootstrap');
 
-  // 1. Verify Environment
-  if (!process.env.DISCORD_TOKEN?.trim()) {
-    logger.error('DISCORD_TOKEN is missing in the environment or .env file.', null, 'Bootstrap');
+  // 1. Verify and Select Environment Token
+  const isTest = process.env.ENV === 'TEST';
+  const token = isTest ? process.env.TEST_TOKEN : process.env.DISCORD_TOKEN;
+  
+  if (!token?.trim()) {
+    logger.error(`${isTest ? 'TEST_TOKEN' : 'DISCORD_TOKEN'} is missing in the environment or .env file.`, null, 'Bootstrap');
     process.exit(1);
   }
 
@@ -83,7 +86,7 @@ export async function bootstrap() {
 
   // 8. Connect to Discord Gateway
   try {
-    await client.login(process.env.DISCORD_TOKEN);
+    await client.login(token);
   } catch (err) {
     logger.error('Login failed:', err, 'Discord');
     closeDb();
