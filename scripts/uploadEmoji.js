@@ -7,9 +7,13 @@
  * Example:
  *   node scripts/uploadEmoji.js logo https://cdn.discordapp.com/emojis/123456789.png
  */
-import 'dotenv/config';
+import dotenv from 'dotenv';
+import { resolve as pathResolve } from 'path';
 import { Client, GatewayIntentBits } from 'discord.js';
 import { logger } from '../src/util/logger.js';
+
+// Resolve dotenv relative to the script location to guarantee it finds the root .env
+dotenv.config({ path: pathResolve('./.env') });
 
 const [,, name, url, useProd] = process.argv;
 
@@ -62,7 +66,7 @@ client.once('ready', async () => {
     // 2. Upload to bot's application emojis
     logger.info('Uploading emoji to Discord application...', 'EmojiUploader');
     const emoji = await client.application.emojis.create({
-      image: dataUrl,
+      attachment: imageBuffer,
       name: name
     });
 
