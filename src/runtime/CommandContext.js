@@ -31,6 +31,7 @@ export function buildContext() {
     parse,
     registry,
     fmt: (n) => Number(n).toLocaleString('en-US'),
-    getInsect: (id) => insectService.getById(id)
+    getInsect: (id) => insectService.getById(id),
+    rollInsect: () => insectService.rollInsect()
   };
 }

@@ -99,4 +99,5 @@ test('CommandContext - context factory shape matches expectations', (t) => {
   assert.ok(ctx.hasOwnProperty('parse'));
   assert.ok(ctx.hasOwnProperty('fmt'));
   assert.ok(ctx.hasOwnProperty('getInsect'));
+  assert.ok(ctx.hasOwnProperty('rollInsect'));
 });

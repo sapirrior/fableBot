@@ -1,22 +1,51 @@
-[
-  {"id": "ant",            "name": "Ant",            "emoji": "🐜", "rarity": "common",    "value": 10,   "weight": 300},
-  {"id": "honeybee",       "name": "Honeybee",       "emoji": "🐝", "rarity": "common",    "value": 12,   "weight": 280},
-  {"id": "beetle",         "name": "Beetle",         "emoji": "🪲", "rarity": "common",    "value": 15,   "weight": 260},
-  {"id": "ladybug",        "name": "Ladybug",        "emoji": "🐞", "rarity": "common",    "value": 18,   "weight": 240},
-  {"id": "fly",            "name": "Housefly",       "emoji": "🪰", "rarity": "common",    "value": 8,    "weight": 220},
-  {"id": "mosquito",       "name": "Mosquito",       "emoji": "🦟", "rarity": "common",    "value": 5,    "weight": 200},
-  {"id": "caterpillar",    "name": "Caterpillar",    "emoji": "🐛", "rarity": "uncommon",  "value": 35,   "weight": 150},
-  {"id": "snail",          "name": "Snail",          "emoji": "🐌", "rarity": "uncommon",  "value": 40,   "weight": 140},
-  {"id": "cricket",        "name": "Cricket",        "emoji": "🦗", "rarity": "uncommon",  "value": 45,   "weight": 130},
-  {"id": "cockroach",      "name": "Cockroach",      "emoji": "🪳", "rarity": "uncommon",  "value": 30,   "weight": 120},
-  {"id": "worm",           "name": "Earthworm",      "emoji": "🪱", "rarity": "uncommon",  "value": 25,   "weight": 110},
-  {"id": "butterfly",      "name": "Butterfly",      "emoji": "🦋", "rarity": "rare",      "value": 100,  "weight": 70},
-  {"id": "dragonfly",      "name": "Dragonfly",      "emoji": "",   "rarity": "rare",      "value": 120,  "weight": 60},
-  {"id": "spider",         "name": "Spider",         "emoji": "🕷️", "rarity": "rare",      "value": 150,  "weight": 50},
-  {"id": "centipede",      "name": "Centipede",      "emoji": "",   "rarity": "rare",      "value": 130,  "weight": 55},
-  {"id": "praying_mantis", "name": "Praying Mantis", "emoji": "",   "rarity": "epic",      "value": 400,  "weight": 20},
-  {"id": "scorpion",       "name": "Scorpion",       "emoji": "🦂", "rarity": "epic",      "value": 500,  "weight": 15},
-  {"id": "moth",           "name": "Luna Moth",      "emoji": "",   "rarity": "epic",      "value": 600,  "weight": 10},
-  {"id": "cicada",         "name": "Golden Cicada",  "emoji": "",   "rarity": "legendary", "value": 2000, "weight": 3},
-  {"id": "atlas_beetle",   "name": "Atlas Beetle",   "emoji": "🪲", "rarity": "legendary", "value": 2500, "weight": 2}
-]
+{
+  "ranks": {
+    "common": {
+      "rarity": 60.0
+    },
+    "uncommon": {
+      "rarity": 28.0
+    },
+    "rare": {
+      "rarity": 10.0
+    },
+    "epic": {
+      "rarity": 1.9
+    },
+    "legendary": {
+      "rarity": 0.1
+    }
+  },
+  "pools": {
+    "common": [
+      {"id": "ant", "name": "Ant", "emoji": "🐜", "value": 10},
+      {"id": "honeybee", "name": "Honeybee", "emoji": "🐝", "value": 12},
+      {"id": "beetle", "name": "Beetle", "emoji": "🪲", "value": 15},
+      {"id": "ladybug", "name": "Ladybug", "emoji": "🐞", "value": 18},
+      {"id": "fly", "name": "Housefly", "emoji": "🪰", "value": 8},
+      {"id": "mosquito", "name": "Mosquito", "emoji": "🦟", "value": 5}
+    ],
+    "uncommon": [
+      {"id": "caterpillar", "name": "Caterpillar", "emoji": "🐛", "value": 35},
+      {"id": "snail", "name": "Snail", "emoji": "🐌", "value": 40},
+      {"id": "cricket", "name": "Cricket", "emoji": "🦗", "value": 45},
+      {"id": "cockroach", "name": "Cockroach", "emoji": "🪳", "value": 30},
+      {"id": "worm", "name": "Earthworm", "emoji": "🪱", "value": 25}
+    ],
+    "rare": [
+      {"id": "butterfly", "name": "Butterfly", "emoji": "🦋", "value": 100},
+      {"id": "dragonfly", "name": "Dragonfly", "emoji": "", "value": 120},
+      {"id": "spider", "name": "Spider", "emoji": "🕷️", "value": 150},
+      {"id": "centipede", "name": "Centipede", "emoji": "", "value": 130}
+    ],
+    "epic": [
+      {"id": "praying_mantis", "name": "Praying Mantis", "emoji": "", "value": 400},
+      {"id": "scorpion", "name": "Scorpion", "emoji": "🦂", "value": 500},
+      {"id": "moth", "name": "Luna Moth", "emoji": "", "value": 600}
+    ],
+    "legendary": [
+      {"id": "cicada", "name": "Golden Cicada", "emoji": "", "value": 2000},
+      {"id": "atlas_beetle", "name": "Atlas Beetle", "emoji": "🪲", "value": 2500}
+    ]
+  }
+}
