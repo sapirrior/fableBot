@@ -55,7 +55,7 @@ export default {
     if (balance < bet) {
       return ctx.sender.error(
         interaction,
-        `You only have **${ctx.fmt(balance)} ${currency}** — not enough to bet **${ctx.fmt(bet)}**.`,
+        `You only have **${currency} ${ctx.fmt(balance)}** — not enough to bet **${currency} ${ctx.fmt(bet)}**.`,
       );
     }
 
@@ -70,10 +70,12 @@ export default {
     ctx.transaction(() => ctx.query('updateUserBalance').run(won ? bet : -bet, userId));
     const newBalance = won ? balance + bet : balance - bet;
 
+    const spinEmoji = ctx.emoji('coinflip') ? `${ctx.emoji('coinflip')} ` : '';
+
     // Initial "spinning" embed
     await ctx.sender.reply(interaction, {
       color: COLORS.SOFT,
-      description: `You bet **${ctx.fmt(bet)} ${currency}** on **${choiceStr}** — the coin is in the air...`,
+      description: `${spinEmoji}You bet **${currency} ${ctx.fmt(bet)}** on **${choiceStr}** — the coin is in the air...`,
     });
 
     // Reveal after 2 s
@@ -81,14 +83,14 @@ export default {
       try {
         const color = won ? COLORS.GOLD : COLORS.ROSE;
         const outcome = won
-          ? `The coin landed **${resultStr}**. You won **+${ctx.fmt(bet)} ${currency}**.`
-          : `The coin landed **${resultStr}**. You lost **−${ctx.fmt(bet)} ${currency}**.`;
+          ? `The coin landed **${resultStr}**. You won **+${currency} ${ctx.fmt(bet)}**.`
+          : `The coin landed **${resultStr}**. You lost **−${currency} ${ctx.fmt(bet)}**.`;
 
         await interaction.editReply({
           embeds: [{
             color,
-            description: `You bet **${ctx.fmt(bet)} ${currency}** on **${choiceStr}** — ${outcome}`,
-            footer: { text: `Balance: ${ctx.fmt(newBalance)} ${currency}` },
+            description: `You bet **${currency} ${ctx.fmt(bet)}** on **${choiceStr}** — ${outcome}`,
+            footer: { text: `Balance: ${currency} ${ctx.fmt(newBalance)}` },
           }],
         });
       } catch { /* message deleted or interaction expired */ }

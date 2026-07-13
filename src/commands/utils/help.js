@@ -7,6 +7,7 @@ import {
   InteractionContextType 
 } from 'discord.js';
 import { CATEGORY_META } from '../../configs/categories.js';
+import { COLORS } from '../../util/colors.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -70,7 +71,7 @@ export default {
 
     // 2. Send the non-ephemeral response with dropdown components
     const response = await interaction.reply({
-      embeds: [{ ...defaultEmbed, color: parseInt((ctx.config.embedColor || '6D3CCF').replace('#', ''), 16) }],
+      embeds: [{ ...defaultEmbed, color: COLORS.SOFT }],
       components: [row],
       withResponse: true
     });
@@ -97,7 +98,7 @@ export default {
           icon_url: interaction.user.displayAvatarURL({ size: 64 })
         },
         description: `Use slash commands (/) for a faster experience!\n\n${categoryDescription}`,
-        color: parseInt((ctx.config.embedColor || '6D3CCF').replace('#', ''), 16)
+        color: COLORS.SOFT
       };
 
       // Acknowledge choice and update the embed, keeping select menu active

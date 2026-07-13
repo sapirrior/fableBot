@@ -78,6 +78,7 @@ Text formatting rules (enforced across all commands):
 - **Dynamic values in bold**: `**500 ⌬**`, not plain text.
 - **Command names in inline code**: `` `/daily` ``, not plain text.
 - **Balance and secondary data in footer**, not cluttering description.
+- **No markdown in embed author or footer fields**: Discord does not render formatting (like `**` or `_`) in author names and footer texts; keep them plain text.
 - **` · ` (middot) as separator** for inline metadata — never `|`.
 - Emoji use is capped at one per line, only where it adds semantic value.
 

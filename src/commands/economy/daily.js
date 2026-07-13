@@ -20,7 +20,7 @@ export default {
     const now      = Date.now();
     const dbUser   = ctx.query('getUser').get(userId);
     const lastDaily       = dbUser?.last_daily ?? 0;
-    const dailyCooldownMs = ctx.config.dailyCooldownMs || 79200000;
+    const dailyCooldownMs = ctx.config.dailyCooldownMs || 86400000;
     const timePassed      = now - lastDaily;
 
     if (timePassed < dailyCooldownMs) {
@@ -44,12 +44,12 @@ export default {
     ctx.transaction(() => ctx.query('claimDaily').run(rewardCoins, now, streak, userId));
 
     const newBalance = (dbUser?.balance ?? 0) + rewardCoins;
-    const streakNote = streak > 1 ? `  ·  Streak: **${streak} days**` : '';
+    const streakNote = streak > 1 ? `  ·  Streak: ${streak} days` : '';
 
     return ctx.sender.reply(interaction, {
       color: COLORS.MINT,
-      description: `Daily reward claimed. **+${ctx.fmt(rewardCoins)} ${currency}** added to your balance.`,
-      footer: { text: `Balance: ${ctx.fmt(newBalance)} ${currency}${streakNote}  ·  Next claim in 22h` },
+      description: `Daily reward claimed. **+${currency} ${ctx.fmt(rewardCoins)}** added to your balance.`,
+      footer: { text: `Balance: ${currency} ${ctx.fmt(newBalance)}${streakNote}  ·  Next claim in 24h` },
     });
   },
 };

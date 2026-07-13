@@ -20,7 +20,7 @@ class ConfigManager {
         prefix: 'sudo',
         embedColor: '#000000',
         cooldownSweepIntervalMs: 300000,
-        dailyCooldownMs: 79200000,
+        dailyCooldownMs: 86400000,
         dailyRewardCoins: 250,
         catchCooldownMs: 10000,
         currencyName: '⌬',

@@ -30,8 +30,8 @@ export default {
     const isSelf   = targetUser.id === interaction.user.id;
 
     const description = isSelf
-      ? `Your balance is **${ctx.fmt(balance)} ${currency}**.`
-      : `**${targetUser.username}** has **${ctx.fmt(balance)} ${currency}**.`;
+      ? `Your balance is **${currency} ${ctx.fmt(balance)}**.`
+      : `**${targetUser.username}** has **${currency} ${ctx.fmt(balance)}**.`;
 
     const embed = isSelf
       ? {

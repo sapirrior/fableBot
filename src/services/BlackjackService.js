@@ -189,13 +189,13 @@ function scoreStr(hand, hide = false) {
 }
 
 const OUTCOME_LINE = {
-  bj:   (d, fmt, cur) => `Natural blackjack — you won **+${fmt(d)} ${cur}**`,
-  win:  (d, fmt, cur) => `You win — **+${fmt(d)} ${cur}**`,
-  lose: (d, fmt, cur) => `You lose — **−${fmt(Math.abs(d))} ${cur}**`,
+  bj:   (d, fmt, cur) => `🎲 ~ You won ${cur} ${fmt(d)}!`,
+  win:  (d, fmt, cur) => `🎲 ~ You won ${cur} ${fmt(d)}!`,
+  lose: (d, fmt, cur) => `🎲 ~ You lost ${cur} ${fmt(Math.abs(d))}!`,
   // eslint-disable-next-line no-unused-vars
-  tie:  (_d, _fmt, _cur) => `Push — your bet has been returned`,
+  tie:  (_d, _fmt, _cur) => `🎲 ~ You tied!`,
   // eslint-disable-next-line no-unused-vars
-  bust: (_d, _fmt, _cur) => `Both bust — your bet has been returned`,
+  bust: (_d, _fmt, _cur) => `🎲 ~ You both bust!`,
 };
 
 /**
@@ -219,13 +219,13 @@ export function buildEmbed({ user, session, gameOver = false, result, newBalance
   const delta  = gameOver ? payout(result, bet) : 0;
 
   let footerText = gameOver
-    ? `${OUTCOME_LINE[result]?.(delta, fmt, currency) ?? ''}  ·  Balance: ${fmt(newBalance)} ${currency}`
-    : `Bet: ${fmt(bet)} ${currency}  ·  Hit to draw a card, Stand to stop`;
+    ? `${OUTCOME_LINE[result]?.(delta, fmt, currency) ?? ''}  ·  Balance: ${currency} ${fmt(newBalance)}`
+    : `🎲 ~ game in progress  ·  Hit to draw a card, Stand to stop`;
 
   return {
     color: gameOver ? (RESULT_COLOR[result] ?? COLORS.SLATE) : COLORS.BRAND,
     author: {
-      name: `${user.username}  ·  ♠ Blackjack  ·  Bet ${fmt(bet)} ${currency}`,
+      name: `${user.username}, you bet ${currency} ${fmt(bet)} to play blackjack`,
       icon_url: user.displayAvatarURL({ size: 64 }),
     },
     fields: [

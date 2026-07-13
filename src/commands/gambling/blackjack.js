@@ -106,7 +106,7 @@ export default {
     if (balance < bet) {
       return ctx.sender.error(
         interaction,
-        `You only have **${ctx.fmt(balance)} ${currency}** — not enough to bet **${ctx.fmt(bet)}**.`,
+        `You only have **${currency} ${ctx.fmt(balance)}** — not enough to bet **${currency} ${ctx.fmt(bet)}**.`,
       );
     }
 

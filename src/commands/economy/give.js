@@ -56,7 +56,7 @@ export default {
     if (senderBalance < amount) {
       return ctx.sender.error(
         interaction,
-        `You only have **${ctx.fmt(senderBalance)} ${ctx.config.currencyName || '⌬'}** — not enough to send **${ctx.fmt(amount)}**.`,
+        `You only have **${ctx.config.currencyName || '⌬'} ${ctx.fmt(senderBalance)}** — not enough to send **${ctx.config.currencyName || '⌬'} ${ctx.fmt(amount)}**.`,
       );
     }
 
@@ -76,8 +76,8 @@ export default {
 
     return ctx.sender.reply(interaction, {
       color: COLORS.MINT,
-      description: `Sent **${ctx.fmt(amount)} ${currency}** to **${targetUser.username}**.`,
-      footer: { text: `Your balance: ${ctx.fmt(newBalance)} ${currency}` },
+      description: `Sent **${currency} ${ctx.fmt(amount)}** to **${targetUser.username}**.`,
+      footer: { text: `Your balance: ${currency} ${ctx.fmt(newBalance)}` },
     });
   },
 };
