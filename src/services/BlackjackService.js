@@ -245,8 +245,8 @@ export function buildEmbed({ user, session, gameOver = false, result, newBalance
       icon_url: user.displayAvatarURL({ size: 64 }),
     },
     fields: [
-      { name: `🏦 Dealer  [${scoreStr(dealerHand, dHide)}]`,  value: renderHandCustom(dealerHand, dHide ? 1 : -1, dCard), inline: true },
-      { name: `🃏 You  [${scoreStr(playerHand)}]`,            value: renderHandCustom(playerHand, -1, pCard),              inline: true },
+      { name: `Dealer  [${scoreStr(dealerHand, dHide)}]`,  value: renderHandCustom(dealerHand, dHide ? 1 : -1, dCard), inline: true },
+      { name: `You  [${scoreStr(playerHand)}]`,            value: renderHandCustom(playerHand, -1, pCard),              inline: true },
     ],
     footer: { text: footerText },
   };
