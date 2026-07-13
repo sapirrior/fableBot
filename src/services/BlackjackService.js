@@ -216,9 +216,25 @@ export function buildEmbed({ user, session, gameOver = false, result, newBalance
   const blank = emojiGet('blank') || '\u200b';
   const dHide  = !gameOver;
   const delta  = gameOver ? payout(result, bet) : 0;
-  // Resolve custom bj emojis to decorate field headers (replacing unicode 🏛 and 🃏)
-  const bj1 = emojiGet('bj1') || '🏛';
-  const bj2 = emojiGet('bj2') || '🃏';
+  // Resolve custom bj emojis to represent cards dynamically
+  const bjEmojis = ['bj1', 'bj2', 'bj3', 'bj4'].map(name => emojiGet(name)).filter(Boolean);
+  let dCard = null;
+  let pCard = null;
+  if (bjEmojis.length >= 2) {
+    const idx1 = Math.floor(Math.random() * bjEmojis.length);
+    let idx2 = Math.floor(Math.random() * bjEmojis.length);
+    while (idx1 === idx2) {
+      idx2 = Math.floor(Math.random() * bjEmojis.length);
+    }
+    dCard = bjEmojis[idx1];
+    pCard = bjEmojis[idx2];
+  } else if (bjEmojis.length === 1) {
+    dCard = bjEmojis[0];
+    pCard = bjEmojis[0];
+  }
+  const renderHandCustom = (hand, hideIdx = -1, customEmoji) => {
+    return hand.map((c, i) => (i === hideIdx ? BACK : (customEmoji || emoji(c)))).join(' ');
+  };
   let footerText = gameOver
     ? `${OUTCOME_LINE[result]?.(delta, fmt, currency) ?? ''}  ·  Balance: ${currency} ${fmt(newBalance)}`
     : `🎲 - game in progress  ·  Hit to draw a card, Stand to stop`;
@@ -229,9 +245,9 @@ export function buildEmbed({ user, session, gameOver = false, result, newBalance
       icon_url: user.displayAvatarURL({ size: 64 }),
     },
     fields: [
-      { name: `${bj1} Dealer  [${scoreStr(dealerHand, dHide)}]`,  value: renderHand(dealerHand, dHide ? 1 : -1), inline: true },
+      { name: `🏦 Dealer  [${scoreStr(dealerHand, dHide)}]`,  value: renderHandCustom(dealerHand, dHide ? 1 : -1, dCard), inline: true },
       { name: blank, value: blank, inline: true },
-      { name: `${bj2} You  [${scoreStr(playerHand)}]`,            value: renderHand(playerHand),                  inline: true },
+      { name: `🃏 You  [${scoreStr(playerHand)}]`,            value: renderHandCustom(playerHand, -1, pCard),                  inline: true },
     ],
     footer: { text: footerText },
   };
