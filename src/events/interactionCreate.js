@@ -7,7 +7,7 @@ import { checkCooldown } from '../util/cooldown.js';
 import { query } from '../db/index.js';
 import { logger } from '../util/logger.js';
 import { buildContext } from '../runtime/CommandContext.js';
-import { getShuttingDownStatus } from '../core/Shutdown.js';
+import { getShuttingDownStatus, incrementActiveCommands, decrementActiveCommands } from '../core/Shutdown.js';
 import { isOwner } from '../util/ownerGuard.js';
 import * as sender from '../util/sender.js';
 
@@ -68,11 +68,15 @@ export default {
     const ctx = buildContext();
 
     // 8. Execute command with error safety wrapper
+    const isDbCommand = cmd.category === 'economy' || cmd.category === 'gambling';
+    if (isDbCommand) incrementActiveCommands();
     try {
       await cmd.execute(client, interaction, ctx);
     } catch (err) {
       logger.error(`Error executing slash command: /${cmd.data.name}`, err, 'Interaction');
       await sender.error(interaction, 'An error occurred while executing this command.');
+    } finally {
+      if (isDbCommand) decrementActiveCommands();
     }
   }
 };

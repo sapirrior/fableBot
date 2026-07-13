@@ -142,73 +142,77 @@ export default {
       time: BUTTON_TIMEOUT,
     });
 
-    collector.on('collect', async btnInt => {
-      // Acknowledge button immediately to prevent "Interaction failed"
-      await btnInt.deferUpdate();
+    await new Promise((resolve) => {
+      collector.on('collect', async btnInt => {
+        // Acknowledge button immediately to prevent "Interaction failed"
+        await btnInt.deferUpdate();
 
-      const s = getSession(userId);
-      if (!s || s.done) { collector.stop('done'); return; }
+        const s = getSession(userId);
+        if (!s || s.done) { collector.stop('done'); return; }
 
-      try {
-        if (btnInt.customId === 'bj_hit') {
-          // ── HIT ──────────────────────────────────────────────────────────
-          const updated = hit(userId);
-          const pVal    = handValue(updated.playerHand).points;
+        try {
+          if (btnInt.customId === 'bj_hit') {
+            // ── HIT ──────────────────────────────────────────────────────────
+            const updated = hit(userId);
+            const pVal    = handValue(updated.playerHand).points;
 
-          if (pVal > 21) {
-            // Bust — resolve immediately
-            collector.stop('done');
-            // Build bust embed, settle DB, then endSession
-            const currency2 = ctx.config.currencyName || '⌬';
-            const newBalance = balance - bet;
-            const bustEmbed = buildEmbed({
-              user: interaction.user, session: updated,
-              gameOver: true, result: 'lose', newBalance,
-              fmt: ctx.fmt, currency: currency2, emojiGet: ctx.emoji,
+            if (pVal > 21) {
+              // Bust — resolve immediately
+              collector.stop('done');
+              // Build bust embed, settle DB, then endSession
+              const currency2 = ctx.config.currencyName || '⌬';
+              const newBalance = balance - bet;
+              const bustEmbed = buildEmbed({
+                user: interaction.user, session: updated,
+                gameOver: true, result: 'lose', newBalance,
+                fmt: ctx.fmt, currency: currency2, emojiGet: ctx.emoji,
+              });
+              await interaction.editReply({ embeds: [bustEmbed], components: [makeButtons(true)] });
+              // No refund on bust — bet was already deducted, delta = -bet, net = 0 added back
+              endSession(userId);
+              return;
+            }
+
+            // Still in play — refresh embed
+            const midEmbed = buildEmbed({
+              user: interaction.user, session: updated, fmt: ctx.fmt, currency, emojiGet: ctx.emoji,
             });
-            await interaction.editReply({ embeds: [bustEmbed], components: [makeButtons(true)] });
-            // No refund on bust — bet was already deducted, delta = -bet, net = 0 added back
-            endSession(userId);
-            return;
+            await interaction.editReply({ embeds: [midEmbed], components: [makeButtons()] });
+
+          } else if (btnInt.customId === 'bj_stand') {
+            // ── STAND ─────────────────────────────────────────────────────────
+            collector.stop('done');
+            const settled = dealerPlay(userId);
+            const res     = outcome(settled);
+            await settle(interaction, userId, settled, res, balance, bet, ctx);
           }
-
-          // Still in play — refresh embed
-          const midEmbed = buildEmbed({
-            user: interaction.user, session: updated, fmt: ctx.fmt, currency, emojiGet: ctx.emoji,
-          });
-          await interaction.editReply({ embeds: [midEmbed], components: [makeButtons()] });
-
-        } else if (btnInt.customId === 'bj_stand') {
-          // ── STAND ─────────────────────────────────────────────────────────
+        } catch (err) {
+          // If service throws (session swept mid-game), stop cleanly
           collector.stop('done');
-          const settled = dealerPlay(userId);
-          const res     = outcome(settled);
-          await settle(interaction, userId, settled, res, balance, bet, ctx);
+          endSession(userId);
         }
-      } catch (err) {
-        // If service throws (session swept mid-game), stop cleanly
-        collector.stop('done');
-        endSession(userId);
-      }
-    });
+      });
 
-    collector.on('end', async (_, reason) => {
-      if (reason === 'done') return;
-
-      // Timed out — forfeit bet (no refund, no retry prompt)
-      const s = getSession(userId);
-      if (!s || s.done) return;
-      endSession(userId);
-      try {
-        const currency2   = ctx.config.currencyName || '⌬';
-        const newBalance  = balance - bet;
-        const timeoutEmbed = buildEmbed({
-          user: interaction.user, session: s,
-          gameOver: true, result: 'lose', newBalance,
-          fmt: ctx.fmt, currency: currency2, emojiGet: ctx.emoji,
-        });
-        await interaction.editReply({ embeds: [timeoutEmbed], components: [makeButtons(true)] });
-      } catch { /* message deleted or interaction expired */ }
+      collector.on('end', async (_, reason) => {
+        if (reason !== 'done') {
+          // Timed out — forfeit bet (no refund, no retry prompt)
+          const s = getSession(userId);
+          if (s && !s.done) {
+            endSession(userId);
+            try {
+              const currency2   = ctx.config.currencyName || '⌬';
+              const newBalance  = balance - bet;
+              const timeoutEmbed = buildEmbed({
+                user: interaction.user, session: s,
+                gameOver: true, result: 'lose', newBalance,
+                fmt: ctx.fmt, currency: currency2, emojiGet: ctx.emoji,
+              });
+              await interaction.editReply({ embeds: [timeoutEmbed], components: [makeButtons(true)] });
+            } catch { /* message deleted or interaction expired */ }
+          }
+        }
+        resolve();
+      });
     });
   },
 };

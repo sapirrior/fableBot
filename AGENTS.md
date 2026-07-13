@@ -90,6 +90,12 @@ Text formatting rules (enforced across all commands):
 - Settle order for gambling commands: **DB write → editReply → endSession** — never mark a
   session done before the reply succeeds, or state can be lost on a transient Discord API error.
 
+## Owner and Admin Commands
+
+- **Owner-only flag**: Gated commands must set `ownerOnly: true` in their export module.
+- **Dynamic guild-scoped registration**: Owner-only commands are filtered out of global registrations and instead registered only to the `ownerGuildId` server configured in `config.json`.
+- **Graceful Shutdown**: The `/stop` command gates execution, waits up to 60 seconds for active database-based commands to resolve, merges SQLite WAL logs via a checkpoint, flushes atomic configurations, generates a final gzipped backup, disconnects the gateway, closes the database, and terminates cleanly.
+
 ## Testing
 
 - Unit tests live alongside the module they test, or under `tests/`, using `node --test`
