@@ -9,3 +9,7 @@ node_modules/
 .mee6/
 .dankmemer/
 .gemini/
+
+# Dynamic configurations
+src/configs/emojis.json
+src/configs/emojis.json.tmp-*
