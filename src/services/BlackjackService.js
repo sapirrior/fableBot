@@ -233,7 +233,8 @@ export function buildEmbed({ user, session, gameOver = false, result, newBalance
     pCard = bjEmojis[0];
   }
   const renderHandCustom = (hand, hideIdx = -1, customEmoji) => {
-    return hand.map((c, i) => (i === hideIdx ? BACK : (customEmoji || emoji(c)))).join(' ');
+    const cardBack = emojiGet('cardback') || BACK;
+    return hand.map((c, i) => (i === hideIdx ? cardBack : (customEmoji || emoji(c)))).join(' ');
   };
   let footerText = gameOver
     ? `${OUTCOME_LINE[result]?.(delta, fmt, currency) ?? ''}  ·  Balance: ${currency} ${fmt(newBalance)}`
