@@ -214,18 +214,14 @@ const OUTCOME_LINE = {
 export function buildEmbed({ user, session, gameOver = false, result, newBalance, fmt, currency, emojiGet }) {
   const { playerHand, dealerHand, bet } = session;
   const blank = emojiGet('blank') || '\u200b';
-
   const dHide  = !gameOver;
   const delta  = gameOver ? payout(result, bet) : 0;
-
   // Resolve random bj custom decoration emoji or fallback to unicode card
   const bjEmojis = ['bj1', 'bj2', 'bj3', 'bj4'].map(name => emojiGet(name)).filter(Boolean);
   const decorEmoji = bjEmojis.length > 0 ? bjEmojis[Math.floor(Math.random() * bjEmojis.length)] + ' ' : '🃏 ';
-
   let footerText = gameOver
     ? `${OUTCOME_LINE[result]?.(delta, fmt, currency, decorEmoji) ?? ''}  ·  Balance: ${currency} ${fmt(newBalance)}`
     : `${decorEmoji}game in progress  ·  Hit to draw a card, Stand to stop`;
-
   return {
     color: gameOver ? (RESULT_COLOR[result] ?? COLORS.SLATE) : COLORS.BRAND,
     author: {
