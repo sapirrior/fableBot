@@ -8,5 +8,7 @@
   "currencyName": "⌬",
   "statusMessage": "? butterflies",
   "backupChannelId": "1525769826956607621",
-  "backupIntervalMs": 21600000
+  "backupIntervalMs": 21600000,
+  "ownerId": "",
+  "ownerGuildId": ""
 }

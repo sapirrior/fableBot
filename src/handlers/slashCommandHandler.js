@@ -56,9 +56,21 @@ export async function loadSlashCommands() {
 }
 
 /**
- * Returns all slash commands as JSON-serializable data for API registration.
+ * Returns public (non-owner) slash commands as JSON for global API registration.
  * @returns {object[]}
  */
 export function getSlashCommandsJSON() {
-  return Array.from(slashRegistry.values()).map(cmd => cmd.data.toJSON());
+  return Array.from(slashRegistry.values())
+    .filter(cmd => !cmd.ownerOnly)
+    .map(cmd => cmd.data.toJSON());
+}
+
+/**
+ * Returns owner-only slash commands as JSON for guild-scoped registration.
+ * @returns {object[]}
+ */
+export function getOwnerCommandsJSON() {
+  return Array.from(slashRegistry.values())
+    .filter(cmd => cmd.ownerOnly)
+    .map(cmd => cmd.data.toJSON());
 }

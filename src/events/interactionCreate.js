@@ -8,6 +8,7 @@ import { query } from '../db/index.js';
 import { logger } from '../util/logger.js';
 import { buildContext } from '../runtime/CommandContext.js';
 import { getShuttingDownStatus } from '../core/Shutdown.js';
+import { isOwner } from '../util/ownerGuard.js';
 import * as sender from '../util/sender.js';
 
 export default {
@@ -42,7 +43,12 @@ export default {
 
     const userId = interaction.user.id;
 
-    // 5. Ensure the user row exists in the database
+    // 5. Block non-owners from owner-only commands
+    if (cmd.ownerOnly && !isOwner(userId)) {
+      return sender.error(interaction, 'This command is restricted to the bot owner.');
+    }
+
+    // 6. Ensure the user row exists in the database
     try {
       query('upsertUser').run(userId);
     } catch (err) {
@@ -50,7 +56,7 @@ export default {
       return sender.error(interaction, 'Failed to resolve user account metadata.');
     }
 
-    // 6. User command cooldown checks
+    // 7. User command cooldown checks
     const cooldownMs = cmd.cooldown ?? 3000;
     const cooldownLeft = checkCooldown(userId, cmd.data.name, cooldownMs);
     if (cooldownLeft > 0) {
