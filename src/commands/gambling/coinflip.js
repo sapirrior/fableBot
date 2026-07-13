@@ -2,7 +2,6 @@ import { SlashCommandBuilder, ApplicationIntegrationType, InteractionContextType
 import { randomInt } from 'node:crypto';
 import { COLORS } from '../../util/colors.js';
 
-const MAX_BET = 250_000;
 
 export default {
   data: new SlashCommandBuilder()
@@ -46,8 +45,9 @@ export default {
     const dbUser  = ctx.query('getUser').get(userId);
     const balance = dbUser?.balance ?? 0;
 
+    const maxBet = ctx.config.maxBetLimit || 250000;
     let bet = parsed.value === 'all' ? balance : parsed.value;
-    if (bet > MAX_BET) bet = MAX_BET;
+    if (bet > maxBet) bet = maxBet;
 
     if (bet <= 0) {
       return ctx.sender.error(interaction, 'You need at least **1 coin** to flip.');

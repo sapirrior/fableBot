@@ -66,7 +66,7 @@ export default {
         name: 'Command Index',
         icon_url: interaction.user.displayAvatarURL({ size: 64 })
       },
-      description: `Welcome to Fable! Run slash commands (/) anywhere.\n\nUse the dropdown menu below to select a command category and view its list of commands.`
+      description: `Welcome to Fable! Run slash commands (/) anywhere.\n\nUse the dropdown menu below to select a command category and view its list of commands.\n\n-# Use \`/rules\` to read the bot rules and terms.`
     };
 
     // 2. Send the non-ephemeral response with dropdown components

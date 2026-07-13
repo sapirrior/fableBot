@@ -17,6 +17,7 @@ export function buildContext() {
   const configService = container.resolve('config');
   const insectService = container.resolve('insects');
   const emojiService = container.resolve('emojis');
+  const highlowService = container.resolve('highlow');
 
   return {
     get config() {
@@ -24,6 +25,9 @@ export function buildContext() {
     },
     get insets() {
       return insectService.getAll();
+    },
+    get highlow() {
+      return highlowService;
     },
     query,
     transaction,

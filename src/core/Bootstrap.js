@@ -13,6 +13,7 @@ import { configManager } from '../services/ConfigService.js';
 import { insectService } from '../services/InsectService.js';
 import { backupService } from '../services/BackupService.js';
 import { emojiService } from '../services/EmojiService.js';
+import { startHighLowSweeper, highlowService } from '../services/HighLowService.js';
 import { container } from './ServiceContainer.js';
 
 /**
@@ -46,12 +47,14 @@ export async function bootstrap() {
   container.register('insects', insectService);
   container.register('backup', backupService);
   container.register('emojis', emojiService);
+  container.register('highlow', highlowService);
   logger.info('Registered services to ServiceContainer.', 'Bootstrap');
 
   // 4. Start sweepers
   const config = configManager.getAll();
   startCooldownSweeper(config.cooldownSweepIntervalMs || 300000);
   startBlackjackSweeper();
+  startHighLowSweeper();
   logger.info('Auto-cleaning cache sweepers started.', 'Sweeper');
 
   // 5. Load Slash Command registry

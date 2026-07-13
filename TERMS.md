@@ -12,7 +12,7 @@ Fable is a user-installable Discord bot offering gameplay utilities, virtual eco
 
 ## 3. Virtual Economy
 * Coinflips and other games use cryptographically secure random number generation (`node:crypto`) to determine outcomes. By playing, you accept the random nature of these calculations.
-* We establish a maximum bet cap of `250,000` virtual coins per round. The developers are not responsible for virtual coins lost during regular gameplay or unexpected connection interruptions.
+* We establish a configurable maximum bet cap (e.g., `250,000` virtual coins) per round. The developers are not responsible for virtual coins lost during regular gameplay or unexpected connection interruptions.
 
 ## 4. Limitation of Liability
 The Bot is provided "as is" without warranty of any kind. The developers shall not be liable for any service interruptions, database loss, or deletion of custom data.

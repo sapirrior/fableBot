@@ -11,11 +11,13 @@ import { initDb, closeDb, transaction } from '../src/db/index.js';
 import { buildContext } from '../src/runtime/CommandContext.js';
 
 import { emojiService } from '../src/services/EmojiService.js';
+import { highlowService } from '../src/services/HighLowService.js';
 
 // Pre-register services to the container for tests
 container.register('config', configManager);
 container.register('insects', insectService);
 container.register('emojis', emojiService);
+container.register('highlow', highlowService);
 
 test('ConfigManager - atomic writes', (t) => {
   const originalPrefix = configManager.get('prefix');
@@ -66,6 +68,7 @@ test('CommandContext - context factory shape matches expectations', (t) => {
   const ctx = buildContext();
   assert.ok(ctx.hasOwnProperty('config'));
   assert.ok(ctx.hasOwnProperty('insets'));
+  assert.ok(ctx.hasOwnProperty('highlow'));
   assert.ok(ctx.hasOwnProperty('query'));
   assert.ok(ctx.hasOwnProperty('transaction'));
   assert.ok(ctx.hasOwnProperty('sender'));

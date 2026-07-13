@@ -18,9 +18,11 @@ Fable is fully configured for Discord's **User-Installable Apps** context. Once 
 **Gambling**
 * `/coinflip` — Gamble coins in a cryptographically secure heads-or-tails flip.
 * `/blackjack` — Play a hand of blackjack against the dealer. Hit or stand with buttons. Natural blackjack pays 1.5×.
+* `/highlow` — Bet if a hidden number (1-100) is higher, lower, or equal (Jackpot) to a hint number.
 
 **Utility**
 * `/help` — Browse available commands by category using an interactive dropdown.
+* `/rules` — Display the bot rules, terms of service, and privacy guidelines.
 * `/avatar` — View any user's full-resolution avatar.
 * `/ping` — Check current gateway latency.
 

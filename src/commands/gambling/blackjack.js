@@ -12,7 +12,6 @@ import {
   hit, dealerPlay, outcome, payout, handValue, buildEmbed,
 } from '../../services/BlackjackService.js';
 
-const MAX_BET        = 250_000;
 const BUTTON_TIMEOUT = 60_000; // 60 s — then collector ends, bet forfeited, no retry
 
 // ─── Reusable button row ─────────────────────────────────────────────────────
@@ -97,8 +96,9 @@ export default {
     const dbUser  = ctx.query('getUser').get(userId);
     const balance = dbUser?.balance ?? 0;
 
+    const maxBet = ctx.config.maxBetLimit || 250000;
     let bet = parsed.value === 'all' ? balance : parsed.value;
-    if (bet > MAX_BET) bet = MAX_BET;
+    if (bet > maxBet) bet = maxBet;
 
     if (bet <= 0) {
       return ctx.sender.error(interaction, 'You need at least **1 coin** to play blackjack.');

@@ -24,7 +24,10 @@ class ConfigManager {
         dailyRewardCoins: 250,
         catchCooldownMs: 10000,
         currencyName: '⌬',
-        statusMessage: '? butterflies'
+        statusMessage: '? butterflies',
+        maxBetLimit: 250000,
+        highlowJackpotMultiplier: 50,
+        blackjackNaturalMultiplier: 1.5
       };
     }
   }

@@ -8,6 +8,7 @@
 import { randomInt } from 'node:crypto';
 import { logger } from '../util/logger.js';
 import { COLORS } from '../util/colors.js';
+import { container } from '../core/ServiceContainer.js';
 
 // Result → embed color mapping
 const RESULT_COLOR = {
@@ -168,7 +169,15 @@ export function outcome(session) {
  * @returns {number}
  */
 export function payout(result, bet) {
-  if (result === 'bj')  return Math.floor(bet * 1.5);
+  let blackjackNaturalMultiplier = 1.5;
+  try {
+    const config = container.resolve('config')?.getAll();
+    if (config && typeof config.blackjackNaturalMultiplier === 'number') {
+      blackjackNaturalMultiplier = config.blackjackNaturalMultiplier;
+    }
+  } catch (_) {}
+
+  if (result === 'bj')  return Math.floor(bet * blackjackNaturalMultiplier);
   if (result === 'win') return bet;
   if (result === 'tie' || result === 'bust') return 0;
   return -bet;

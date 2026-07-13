@@ -10,5 +10,8 @@
   "backupChannelId": "1525769826956607621",
   "backupIntervalMs": 21600000,
   "ownerId": "1400127475907825674",
-  "ownerGuildId": "1525769826193113109"
+  "ownerGuildId": "1525769826193113109",
+  "maxBetLimit": 250000,
+  "highlowJackpotMultiplier": 50,
+  "blackjackNaturalMultiplier": 1.5
 }
