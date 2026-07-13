@@ -189,9 +189,9 @@ function scoreStr(hand, hide = false) {
 }
 
 const OUTCOME_LINE = {
-  bj:   (d, fmt, cur, emoji) => `${emoji}You won ${cur} ${fmt(d)}!`,
-  win:  (d, fmt, cur, emoji) => `${emoji}You won ${cur} ${fmt(d)}!`,
-  lose: (d, fmt, cur, emoji) => `${emoji}You lost ${cur} ${fmt(Math.abs(d))}!`,
+  bj:   (d, fmt, cur, emoji) => `${emoji}You won **+${cur} ${fmt(d)}**!`,
+  win:  (d, fmt, cur, emoji) => `${emoji}You won **+${cur} ${fmt(d)}**!`,
+  lose: (d, fmt, cur, emoji) => `${emoji}You lost **−${cur} ${fmt(Math.abs(d))}**!`,
   // eslint-disable-next-line no-unused-vars
   tie:  (_d, _fmt, _cur, emoji) => `${emoji}You tied!`,
   // eslint-disable-next-line no-unused-vars
