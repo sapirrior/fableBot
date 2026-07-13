@@ -54,7 +54,7 @@ Fable is fully configured for Discord's **User-Installable Apps** context. Once 
    {
      "currencyName": "⌬",
      "dailyRewardCoins": 250,
-     "dailyCooldownMs": 79200000,
+     "dailyCooldownMs": 86400000,
      "backupChannelId": "your_channel_id"
    }
    ```
