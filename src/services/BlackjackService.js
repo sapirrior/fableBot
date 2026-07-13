@@ -213,7 +213,6 @@ const OUTCOME_LINE = {
  */
 export function buildEmbed({ user, session, gameOver = false, result, newBalance, fmt, currency, emojiGet }) {
   const { playerHand, dealerHand, bet } = session;
-  const blank = emojiGet('blank') || '\u200b';
   const dHide  = !gameOver;
   const delta  = gameOver ? payout(result, bet) : 0;
   // Resolve custom bj emojis to represent cards dynamically
@@ -232,9 +231,9 @@ export function buildEmbed({ user, session, gameOver = false, result, newBalance
     dCard = bjEmojis[0];
     pCard = bjEmojis[0];
   }
+  const bj0 = emojiGet('bj0') || BACK;
   const renderHandCustom = (hand, hideIdx = -1, customEmoji) => {
-    const cardBack = emojiGet('cardback') || BACK;
-    return hand.map((c, i) => (i === hideIdx ? cardBack : (customEmoji || emoji(c)))).join(' ');
+    return hand.map((c, i) => (i === hideIdx ? bj0 : (customEmoji || emoji(c)))).join(' ');
   };
   let footerText = gameOver
     ? `${OUTCOME_LINE[result]?.(delta, fmt, currency) ?? ''}  ·  Balance: ${currency} ${fmt(newBalance)}`
@@ -247,8 +246,7 @@ export function buildEmbed({ user, session, gameOver = false, result, newBalance
     },
     fields: [
       { name: `🏦 Dealer  [${scoreStr(dealerHand, dHide)}]`,  value: renderHandCustom(dealerHand, dHide ? 1 : -1, dCard), inline: true },
-      { name: blank, value: blank, inline: true },
-      { name: `🃏 You  [${scoreStr(playerHand)}]`,            value: renderHandCustom(playerHand, -1, pCard),                  inline: true },
+      { name: `🃏 You  [${scoreStr(playerHand)}]`,            value: renderHandCustom(playerHand, -1, pCard),              inline: true },
     ],
     footer: { text: footerText },
   };
