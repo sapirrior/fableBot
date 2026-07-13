@@ -189,13 +189,13 @@ function scoreStr(hand, hide = false) {
 }
 
 const OUTCOME_LINE = {
-  bj:   (d, fmt, cur, emoji) => `${emoji}You won **+${cur} ${fmt(d)}**!`,
-  win:  (d, fmt, cur, emoji) => `${emoji}You won **+${cur} ${fmt(d)}**!`,
-  lose: (d, fmt, cur, emoji) => `${emoji}You lost **−${cur} ${fmt(Math.abs(d))}**!`,
+  bj:   (d, fmt, cur) => `🎲 - You won **+${cur} ${fmt(d)}**!`,
+  win:  (d, fmt, cur) => `🎲 - You won **+${cur} ${fmt(d)}**!`,
+  lose: (d, fmt, cur) => `🎲 - You lost **−${cur} ${fmt(Math.abs(d))}**!`,
   // eslint-disable-next-line no-unused-vars
-  tie:  (_d, _fmt, _cur, emoji) => `${emoji}You tied!`,
+  tie:  (_d, _fmt, _cur) => `🎲 - You tied!`,
   // eslint-disable-next-line no-unused-vars
-  bust: (_d, _fmt, _cur, emoji) => `${emoji}You both bust!`,
+  bust: (_d, _fmt, _cur) => `🎲 - You both bust!`,
 };
 
 /**
@@ -216,12 +216,12 @@ export function buildEmbed({ user, session, gameOver = false, result, newBalance
   const blank = emojiGet('blank') || '\u200b';
   const dHide  = !gameOver;
   const delta  = gameOver ? payout(result, bet) : 0;
-  // Resolve random bj custom decoration emoji or fallback to unicode card
-  const bjEmojis = ['bj1', 'bj2', 'bj3', 'bj4'].map(name => emojiGet(name)).filter(Boolean);
-  const decorEmoji = bjEmojis.length > 0 ? bjEmojis[Math.floor(Math.random() * bjEmojis.length)] + ' ' : '🃏 ';
+  // Resolve custom bj emojis to decorate field headers (replacing unicode 🏛 and 🃏)
+  const bj1 = emojiGet('bj1') || '🏛';
+  const bj2 = emojiGet('bj2') || '🃏';
   let footerText = gameOver
-    ? `${OUTCOME_LINE[result]?.(delta, fmt, currency, decorEmoji) ?? ''}  ·  Balance: ${currency} ${fmt(newBalance)}`
-    : `${decorEmoji}game in progress  ·  Hit to draw a card, Stand to stop`;
+    ? `${OUTCOME_LINE[result]?.(delta, fmt, currency) ?? ''}  ·  Balance: ${currency} ${fmt(newBalance)}`
+    : `🎲 - game in progress  ·  Hit to draw a card, Stand to stop`;
   return {
     color: gameOver ? (RESULT_COLOR[result] ?? COLORS.SLATE) : COLORS.BRAND,
     author: {
@@ -229,9 +229,9 @@ export function buildEmbed({ user, session, gameOver = false, result, newBalance
       icon_url: user.displayAvatarURL({ size: 64 }),
     },
     fields: [
-      { name: `🏦 Dealer  [${scoreStr(dealerHand, dHide)}]`,  value: renderHand(dealerHand, dHide ? 1 : -1), inline: true },
+      { name: `${bj1} Dealer  [${scoreStr(dealerHand, dHide)}]`,  value: renderHand(dealerHand, dHide ? 1 : -1), inline: true },
       { name: blank, value: blank, inline: true },
-      { name: `🃏 You  [${scoreStr(playerHand)}]`,            value: renderHand(playerHand),                  inline: true },
+      { name: `${bj2} You  [${scoreStr(playerHand)}]`,            value: renderHand(playerHand),                  inline: true },
     ],
     footer: { text: footerText },
   };
