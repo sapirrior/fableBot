@@ -88,7 +88,7 @@ export async function shutdown(client, interaction = null) {
     client.destroy();
   }
   closeDb();
-
-  logger.info('Graceful shutdown completed successfully.', 'Lifecycle');
-  process.exit(0);
+  logger.info('Graceful shutdown completed successfully. Process entering idle paused state.', 'Lifecycle');
+  // Keep the process alive indefinitely in a paused state to prevent exit/restart
+  setInterval(() => {}, 86400000);
 }

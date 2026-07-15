@@ -31,7 +31,7 @@ export default {
 
     await ctx.sender.reply(interaction, {
       color: COLORS.ROSE,
-      description: 'Want to stop fable',
+      description: 'Are you sure you want to execute `/stop` and pause Fable?',
     });
 
     // Update with the Proceed button
@@ -71,7 +71,7 @@ export default {
         await interaction.editReply({
           embeds: [{
             color: COLORS.SLATE,
-            description: 'Shutdown request expired.',
+            description: 'The shutdown request for `/stop` has expired.',
           }],
           components: [disabledRow],
         });
