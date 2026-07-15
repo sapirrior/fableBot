@@ -68,7 +68,7 @@ export default {
     const ctx = buildContext();
 
     // 8. Execute command with error safety wrapper
-    const isDbCommand = cmd.category === 'economy' || cmd.category === 'gambling';
+    const isDbCommand = cmd.category === 'economy' || cmd.category === 'gambling' || cmd.category === 'insects';
     if (isDbCommand) incrementActiveCommands();
     try {
       await cmd.execute(client, interaction, ctx);

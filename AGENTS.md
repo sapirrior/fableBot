@@ -108,9 +108,10 @@ Text formatting rules (enforced across all commands):
 ## Boundaries — do not do these unless explicitly asked
 
 - Do not migrate slash commands back to prefix commands.
-- Do not introduce sharding, Redis, an ORM, or a bot framework (e.g., Sapphire). The two-dependency
-  footprint is intentional.
+- Do not introduce sharding, Redis, an ORM, or a bot framework (e.g., Sapphire). The two-dependency footprint is intentional.
 - Do not use `dynamic: true` in `displayAvatarURL()` — it was removed in discord.js v14.
+- Do not increase the client cache limits: all Managers (Message, User, GuildMember, etc.) are strictly capped at `0` for minimal memory bounds.
+- All dynamic dropdown component collectors (e.g. `/shop` select menus) must expire cleanly (e.g., set to `60000ms` / 1 minute) and disable components on finish to prevent dead UI state.
 
 ## When stuck
 

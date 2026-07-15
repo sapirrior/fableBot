@@ -1,6 +1,6 @@
 # Fable (`fableBot`)
 
-Fable is a zero-bloat, high-performance User-Installable Slash Command Discord bot offering virtual currency economy, daily reward progression, and card/coin gambling games.
+Fable is a zero-bloat, high-performance User-Installable Slash Command Discord bot offering virtual currency economy, daily reward progression, card/coin gambling games, and a full insect-catching collection system.
 
 ## Install Anywhere
 
@@ -11,9 +11,18 @@ Fable is fully configured for Discord's **User-Installable Apps** context. Once 
 ## Command Guide
 
 **Economy**
-* `/balance` — Check your coin balance or view another user's balance.
-* `/daily` — Claim your daily coin reward and progress your streak.
+* `/profile` — View catcher level, experience progression, balance, daily streak, and active rank title.
+* `/daily` — Claim your daily coin reward (increases in value based on your Catcher Level).
 * `/give` — Transfer coins securely to another player.
+* `/shop` — Browse catching nets and consumable baits using an interactive dropdown menu.
+* `/buy` — Purchase nets (with custom durability/rates) or baits from the shop.
+* `/inventory` — View your owned nets, baits, and highlight your currently equipped active net.
+* `/equip` — Choose and equip an active catching net from your owned inventory stash.
+
+**Insects**
+* `/catch` — Spend coins and use equipped nets/optional baits to capture insects, gain XP, and level up.
+* `/collection` — Browse your captured insects cataloged by rarity tier, showing counts and duplicate star ratings.
+* `/sell` — Release duplicate insects back to nature for coin payouts scaling logarithmically by rank.
 
 **Gambling**
 * `/coinflip` — Gamble coins in a cryptographically secure heads-or-tails flip.
@@ -51,15 +60,7 @@ Fable is fully configured for Discord's **User-Installable Apps** context. Once 
    OWNER_ID=your_discord_id
    ```
 
-3. Review `src/configs/config.json` for tunable values:
-   ```json
-   {
-     "currencyName": "⌬",
-     "dailyRewardCoins": 250,
-     "dailyCooldownMs": 86400000,
-     "backupChannelId": "your_channel_id"
-   }
-   ```
+3. Review `src/configs/config.json` for tunable values.
 
 4. Run:
    ```bash
@@ -75,6 +76,12 @@ There is no build step. This is plain ESM JavaScript — no TypeScript, no bundl
 ## Project Structure
 
 ```
+docs/
+├── colors.md                   # Brand theme color specifications
+├── items.md                    # Core distinctions and catalog for nets/baits
+├── itemsFunctions.md           # Mermaid system flow for shop, buy, inventory
+├── leveling.md                 # Infinite leveling progression and duplicate formulas
+└── text_stylings.md            # Text formatting guidelines and rules
 src/
 ├── fable.js                    # thin bot lifecycle orchestrator
 ├── index.js                    # application entry point & process signal handlers
@@ -83,49 +90,31 @@ src/
 │   ├── ServiceContainer.js     # minimal dependency injection map
 │   └── Shutdown.js             # graceful shutdown & in-flight drain
 ├── commands/
-│   ├── economy/                # balance, daily, give
-│   ├── gambling/               # coinflip, blackjack
-│   └── utils/                  # ping, help, avatar
+│   ├── economy/                # profile, daily, buy, sell, shop, inventory, equip
+│   ├── gambling/               # coinflip, blackjack, highlow
+│   ├── insects/                # catch, collection
+│   └── utils/                  # ping, help, avatar, rules
 ├── db/
 │   └── index.js                # SQLite setup, WAL, nested savepoint transactions
-├── events/
-│   ├── interactionCreate.js    # slash command router
-│   └── ready.js                # emoji sync & command registration
-├── handlers/
-│   ├── eventHandler.js         # dynamic event loader
-│   └── slashCommandHandler.js  # dynamic command loader & JSON serializer
-├── configs/
-│   ├── categories.js           # help menu category metadata
-│   ├── config.json             # runtime configuration
-│   └── insets.json             # insect pool definitions
 ├── services/
-│   ├── BackupService.js        # in-memory gzip DB backup scheduler
-│   ├── BlackjackService.js     # in-memory BJ session store, card logic & embed builder
-│   ├── ConfigService.js        # atomic read/write manager for config.json
-│   ├── EmojiService.js         # application emoji sync & local cache
-│   └── InsectService.js        # tier-first weighted insect roll provider
-└── util/
-    ├── colors.js               # named embed color palette (COLORS.BRAND, GOLD, ROSE…)
-    ├── constants.js            # rarity colors, emoji indicators, helpers
-    ├── cooldown.js             # per-user command cooldown map with sweeper
-    ├── logger.js               # zero-dependency structured console logger
-    ├── parse.js                # amount parsing, user mention, time formatting
-    └── sender.js               # interaction-aware embed reply helper
+│   ├── ItemService.js          # Config parser loader for shop items
+│   ├── InsectService.js        # Catcher levels and duplicate multiplier formulas
+│   └── ...
+└── ...
 ```
 
 ---
 
 ## Architecture Notes
 
-- **Services own state.** Any capability that needs a `Map`, cache, or shared object lives in `src/services/`. Event files only sequence calls.
-- **Two dependencies.** `discord.js` and `dotenv`. Node's stdlib (`node:sqlite`, `node:crypto`, `node:zlib`) handles everything else.
-- **No memory leaks.** Every unbounded in-memory `Map` has a self-sweeping interval (cooldowns, blackjack sessions).
-- **Atomic config writes.** All config mutations go through `ConfigService` which writes to a temp file then renames — no partial writes.
-- **Embed color palette.** All colors are defined in `src/util/colors.js` as named constants matched to the bot's avatar palette.
+* **Services own state.** Any capability that needs a `Map`, cache, or shared object lives in `src/services/`. Event files only sequence calls.
+* **Minimal dependencies.** Zero-bloat design utilizing native Node.js libraries (`node:sqlite`, `node:crypto`, `node:zlib`).
+* **Micro-memory caching.** Bot caches configured to minimum limits (`0` caching) to guarantee a low memory footprint.
+* **Self-Sweeping Caches.** Any cache keyed by Discord parameters sweeps itself on intervals to avoid memory leaks.
 
 ---
 
 ## Development Guidelines
 
-- **For AI Agents**: See [AGENTS.md](AGENTS.md) for strict rules, hard limits, and conventions.
-- **For Humans**: Write clean ESM JavaScript. Add new features as services under `src/services/` and register them in `Bootstrap.js`. Always run `node --test` before pushing.
+- **For AI Agents**: See [AGENTS.md](AGENTS.md) for strict formatting rules, hard limits, and folder boundaries.
+- **For Humans**: Read the technical manuals under `docs/` to inspect mathematical functions and API styles before contributing.

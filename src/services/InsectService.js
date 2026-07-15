@@ -106,6 +106,69 @@ class InsectService {
     this.load();
     logger.info('Insect definitions reloaded successfully.', 'InsectService');
   }
+
+  /**
+   * Computes the level, title, and current progression based on total XP.
+   * @param {number} xp - The user's total XP.
+   * @returns {object} Level metadata: { level, currentXp, nextLevelXp, title, emoji }
+   */
+  computeLevel(xp) {
+    if (xp < 0) xp = 0;
+    let level = 1;
+    if (xp > 0) {
+      level = Math.floor(Math.pow(xp / 120, 1 / 1.8)) + 1;
+      if (level < 1) level = 1;
+    }
+
+    const currentMinXp = level === 1 ? 0 : Math.floor(Math.pow(level - 1, 1.8) * 120);
+    const nextLevelTargetXp = Math.floor(Math.pow(level, 1.8) * 120);
+
+    const titles = [
+      { min_level: 1,   title: "Novice Catcher",          emoji: "🪱" },
+      { min_level: 6,   title: "Apprentice Entomologist",  emoji: "🦗" },
+      { min_level: 12,  title: "Insect Enthusiast",        emoji: "🐌" },
+      { min_level: 20,  title: "Skilled Collector",        emoji: "🪲" },
+      { min_level: 30,  title: "Expert Tracker",           emoji: "🐜" },
+      { min_level: 45,  title: "Master Catcher",           emoji: "🦋" },
+      { min_level: 60,  title: "Grand Entomologist",       emoji: "🦂" },
+      { min_level: 80,  title: "Lord of the Swarm",        emoji: "🐝" },
+      { min_level: 100, title: "Celestial Warden",         emoji: "✨" },
+      { min_level: 150, title: "Astral Hunter",            emoji: "☄️" },
+      { min_level: 200, title: "Void Walker",              emoji: "🌑" },
+      { min_level: 300, title: "Cosmos Monarch",           emoji: "🌌" },
+      { min_level: 500, title: "Keeper of the Eternal Hive", emoji: "👑" }
+    ];
+
+    let activeTitle = titles[0];
+    for (const title of titles) {
+      if (level >= title.min_level) {
+        activeTitle = title;
+      }
+    }
+
+    return {
+      level,
+      currentXp: xp - currentMinXp,
+      nextLevelXp: nextLevelTargetXp - currentMinXp,
+      totalXpNeeded: nextLevelTargetXp,
+      title: activeTitle.title,
+      emoji: activeTitle.emoji
+    };
+  }
+
+  /**
+   * Calculates the sell value of an insect based on the quantity owned.
+   * Uses logarithmic scaling for duplicate bonuses.
+   * @param {object} insect - The insect configuration.
+   * @param {number} count - The count of duplicate insects currently owned.
+   * @returns {number} The final calculated sell value.
+   */
+  computeSellValue(insect, count) {
+    const baseValue = insect.base_value || insect.value || 5;
+    if (count <= 1) return baseValue;
+    const multiplier = 1 + 0.12 * Math.log2(count + 1);
+    return Math.floor(baseValue * multiplier);
+  }
 }
 
 export const insectService = new InsectService();

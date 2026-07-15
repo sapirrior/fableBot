@@ -1,0 +1,65 @@
+{
+  "items": [
+    {
+      "id": "basic_net",
+      "name": "Basic Net",
+      "emoji": "🕸️",
+      "category": "net",
+      "price": 100,
+      "description": "A simple net. 20 uses. No rarity bonuses.",
+      "durability": 20,
+      "effects": []
+    },
+    {
+      "id": "fine_net",
+      "name": "Fine Mesh Net",
+      "emoji": "🏸",
+      "category": "net",
+      "price": 500,
+      "description": "A finely woven net. 15 uses. Boosts Rare and Legendary catches.",
+      "durability": 15,
+      "effects": [
+        { "type": "tier_multiplier", "tier": "rare", "value": 2.0 },
+        { "type": "tier_multiplier", "tier": "legendary", "value": 1.5 }
+      ]
+    },
+    {
+      "id": "golden_net",
+      "name": "Golden Net",
+      "emoji": "🥇",
+      "category": "net",
+      "price": 2500,
+      "description": "A net woven from gold thread. 10 uses. Greatly boosts Legendary and Celestial.",
+      "durability": 10,
+      "effects": [
+        { "type": "tier_multiplier", "tier": "legendary", "value": 3.0 },
+        { "type": "tier_multiplier", "tier": "celestial", "value": 3.0 }
+      ]
+    },
+    {
+      "id": "sweet_honey",
+      "name": "Sweet Honey",
+      "emoji": "🍯",
+      "category": "bait",
+      "price": 150,
+      "description": "Smear some honey. Catches 1 extra insect this use.",
+      "durability": null,
+      "effects": [
+        { "type": "extra_catch", "value": 1 }
+      ]
+    },
+    {
+      "id": "pheromone",
+      "name": "Insect Pheromone",
+      "emoji": "🧪",
+      "category": "bait",
+      "price": 300,
+      "description": "Powerful lure. Doubles Uncommon and Rare catch rates for this use.",
+      "durability": null,
+      "effects": [
+        { "type": "tier_multiplier", "tier": "uncommon", "value": 2.0 },
+        { "type": "tier_multiplier", "tier": "rare", "value": 2.0 }
+      ]
+    }
+  ]
+}

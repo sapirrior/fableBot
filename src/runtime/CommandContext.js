@@ -38,6 +38,9 @@ export function buildContext() {
     fmt: (n) => Number(n).toLocaleString('en-US'),
     getInsect: (id) => insectService.getById(id),
     rollInsect: () => insectService.rollInsect(),
-    emoji: (name) => emojiService.get(name)
+    emoji: (name) => emojiService.get(name),
+    get container() {
+      return container;
+    }
   };
 }

@@ -52,6 +52,11 @@ export default {
           .setEmoji('🎰')
           .setValue('gambling'),
         new StringSelectMenuOptionBuilder()
+          .setLabel('Insects')
+          .setDescription('Catch, view, and manage your insect collection.')
+          .setEmoji('🌿')
+          .setValue('insects'),
+        new StringSelectMenuOptionBuilder()
           .setLabel('Utility')
           .setDescription('View status, latency, avatar, and guide commands.')
           .setEmoji('🔧')

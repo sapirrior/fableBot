@@ -68,9 +68,28 @@ export function initDb(dbPath = './src/db/database/fable_data.db') {
     ) STRICT;
   `);
 
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS user_items (
+      user_id      TEXT    NOT NULL REFERENCES users(user_id),
+      item_id      TEXT    NOT NULL,
+      category     TEXT    NOT NULL,
+      count        INTEGER NOT NULL DEFAULT 1,
+      durability   INTEGER,
+      equipped     INTEGER NOT NULL DEFAULT 0,
+      acquired_at  INTEGER NOT NULL DEFAULT (unixepoch()),
+      PRIMARY KEY (user_id, item_id)
+    ) STRICT;
+  `);
+
   // --- Migrations (idempotent: ignore error if column already exists) ---
   try {
     db.exec('ALTER TABLE users ADD COLUMN daily_streak INTEGER NOT NULL DEFAULT 0;');
+  } catch {
+    // Column already present — safe to ignore
+  }
+
+  try {
+    db.exec('ALTER TABLE users ADD COLUMN rules_accepted INTEGER NOT NULL DEFAULT 0;');
   } catch {
     // Column already present — safe to ignore
   }
@@ -88,6 +107,7 @@ export function initDb(dbPath = './src/db/database/fable_data.db') {
   prepare('updateUserXP',      'UPDATE users SET xp = ?, level = ? WHERE user_id = ?');
   prepare('updateUserBalance', 'UPDATE users SET balance = balance + ? WHERE user_id = ?');
   prepare('claimDaily',        'UPDATE users SET balance = balance + ?, last_daily = ?, daily_streak = ? WHERE user_id = ?');
+  prepare('acceptRules',       'UPDATE users SET rules_accepted = 1 WHERE user_id = ?');
 
   // Collection
   prepare('getCollection',      'SELECT insect_id, count, first_caught FROM collection WHERE user_id = ? ORDER BY first_caught ASC');
@@ -100,6 +120,15 @@ export function initDb(dbPath = './src/db/database/fable_data.db') {
   `);
   prepare('removeInsect',    'DELETE FROM collection WHERE user_id = ? AND insect_id = ?');
   prepare('decrementInsect', 'UPDATE collection SET count = count - 1 WHERE user_id = ? AND insect_id = ?');
+
+  // Items
+  prepare('getUserItem',              'SELECT * FROM user_items WHERE user_id = ? AND item_id = ?');
+  prepare('getUserItems',             'SELECT * FROM user_items WHERE user_id = ?');
+  prepare('getUserNet',               'SELECT * FROM user_items WHERE user_id = ? AND equipped = 1 AND category = \'net\'');
+  prepare('upsertUserItem',           'INSERT INTO user_items (user_id, item_id, category, count, durability) VALUES (?, ?, ?, ?, ?) ON CONFLICT(user_id, item_id) DO UPDATE SET count = count + ?, durability = ?');
+  prepare('updateItemDurability',     'UPDATE user_items SET durability = ? WHERE user_id = ? AND item_id = ?');
+  prepare('removeItem',               'DELETE FROM user_items WHERE user_id = ? AND item_id = ?');
+  prepare('equipNet',                 'UPDATE user_items SET equipped = CASE WHEN item_id = ? THEN 1 ELSE 0 END WHERE user_id = ? AND category = \'net\'');
 
   // Leaderboards
   prepare('getTopBalance',    'SELECT user_id, balance FROM users ORDER BY balance DESC LIMIT ?');

@@ -14,6 +14,7 @@ import { insectService } from '../services/InsectService.js';
 import { backupService } from '../services/BackupService.js';
 import { emojiService } from '../services/EmojiService.js';
 import { startHighLowSweeper, highlowService } from '../services/HighLowService.js';
+import { itemService } from '../services/ItemService.js';
 import { container } from './ServiceContainer.js';
 
 /**
@@ -48,6 +49,7 @@ export async function bootstrap() {
   container.register('backup', backupService);
   container.register('emojis', emojiService);
   container.register('highlow', highlowService);
+  container.register('items', itemService);
   logger.info('Registered services to ServiceContainer.', 'Bootstrap');
 
   // 4. Start sweepers
@@ -63,12 +65,13 @@ export async function bootstrap() {
   // 6. Build Client with minimal intents (Guilds only is enough for slash commands)
   const client = new Client({
     intents: [
-      GatewayIntentBits.Guilds
+      GatewayIntentBits.Guilds,
+      GatewayIntentBits.GuildMessages
     ],
     makeCache: Options.cacheWithLimits({
-      MessageManager: 10,
-      UserManager: 100,
-      GuildMemberManager: 100,
+      MessageManager: 0,
+      UserManager: 0,
+      GuildMemberManager: 0,
       ReactionManager: 0,
       GuildEmojiManager: 0,
       GuildStickerManager: 0,

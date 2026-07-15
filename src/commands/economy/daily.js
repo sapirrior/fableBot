@@ -34,7 +34,9 @@ export default {
     // Defer before transaction — safe to defer after early-return errors above
     await ctx.sender.defer(interaction);
 
-    const rewardCoins = ctx.config.dailyRewardCoins || 250;
+    const baseReward  = ctx.config.dailyRewardCoins || 250;
+    const catcherLevel = dbUser?.level ?? 1;
+    const rewardCoins = baseReward + (catcherLevel * 25);
     const currency    = ctx.config.currencyName || '⌬';
 
     // Streak: reset if more than 48 h since last claim
@@ -48,7 +50,7 @@ export default {
 
     return ctx.sender.reply(interaction, {
       color: COLORS.MINT,
-      description: `Daily reward claimed. **+${currency} ${ctx.fmt(rewardCoins)}** added to your balance.`,
+      description: `Daily reward claimed. **+${currency} ${ctx.fmt(rewardCoins)}** added to your balance.\n*(Includes Level **${catcherLevel}** bonus: +${currency} ${ctx.fmt(catcherLevel * 25)})*`,
       footer: { text: `Balance: ${currency} ${ctx.fmt(newBalance)}${streakNote}  ·  Next claim in 24h` },
     });
   },
