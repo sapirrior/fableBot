@@ -48,6 +48,19 @@ export default {
       return sender.error(interaction, 'This command is restricted to the bot owner.');
     }
 
+    // 5.5 Check if the user is banned
+    try {
+      const ban = query('checkUserBan').get(userId, cmd.data.name);
+      if (ban) {
+        const reason = ban.reason ? `Reason: *${ban.reason}*` : 'No reason provided.';
+        const scopeText = ban.command === 'all' ? 'all commands' : `\`/${cmd.data.name}\``;
+        return sender.error(interaction, `You have been banned from using ${scopeText}.\n\n💬 ${reason}`);
+      }
+    } catch (err) {
+      logger.error(`Failed to check user ban status for ${userId}`, err, 'Interaction');
+      return sender.error(interaction, 'Failed to verify user account status.');
+    }
+
     // 6. Ensure the user row exists in the database
     try {
       query('upsertUser').run(userId);
