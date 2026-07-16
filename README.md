@@ -18,6 +18,7 @@ Fable is fully configured for Discord's **User-Installable Apps** context. Once 
 * `/buy` — Purchase nets (with custom durability/rates) or baits from the shop.
 * `/inventory` — View your owned nets, baits, and highlight your currently equipped active net.
 * `/equip` — Choose and equip an active catching net from your owned inventory stash.
+* `/leaderboard` — View the top coin, level, or collection leaderboards, or check your own ranking position.
 
 **Insects**
 * `/catch` — Spend coins and use equipped nets/optional baits to capture insects, gain XP, and level up.

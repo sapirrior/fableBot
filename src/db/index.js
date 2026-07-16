@@ -133,6 +133,10 @@ export function initDb(dbPath = './src/db/database/fable_data.db') {
   // Leaderboards
   prepare('getTopBalance',    'SELECT user_id, balance FROM users ORDER BY balance DESC LIMIT ?');
   prepare('getTopCollection', 'SELECT user_id, SUM(count) as total FROM collection GROUP BY user_id ORDER BY total DESC LIMIT ?');
+  prepare('getTopXP',         'SELECT user_id, xp, level FROM users ORDER BY xp DESC LIMIT ?');
+  prepare('getUserBalanceRank',    'SELECT COUNT(*) + 1 AS rank FROM users WHERE balance > (SELECT balance FROM users WHERE user_id = ?) AND user_id != ?');
+  prepare('getUserXPRank',         'SELECT COUNT(*) + 1 AS rank FROM users WHERE xp > (SELECT xp FROM users WHERE user_id = ?) AND user_id != ?');
+  prepare('getUserCollectionRank', 'SELECT COUNT(*) + 1 AS rank FROM (SELECT user_id, SUM(count) as total FROM collection WHERE user_id != ? GROUP BY user_id) WHERE total > (SELECT COALESCE(SUM(count), 0) FROM collection WHERE user_id = ?)');
 
   // Bans and Disabled Commands
   prepare('checkUserBan',       'SELECT * FROM user_ban WHERE user_id = ? AND (command = ? OR command = \'all\')');
