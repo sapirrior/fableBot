@@ -7,6 +7,14 @@ import { resolve } from 'path';
 test('EmojiService - synchronization and local atomic reads/writes', (t) => {
   const emojisPath = resolve('./src/configs/emojis.json');
   
+  // Backup original content if exists
+  let originalContent = null;
+  if (existsSync(emojisPath)) {
+    try {
+      originalContent = readFileSync(emojisPath, 'utf8');
+    } catch (_) {}
+  }
+  
   // Set test data to emojis object and sync to disk
   emojiService.emojis = {
     "test_logo": "<:test_logo:1234567890>",
@@ -26,8 +34,12 @@ test('EmojiService - synchronization and local atomic reads/writes', (t) => {
   assert.strictEqual(emojiService.get('blank'), '<:blank:9876543210>');
   assert.strictEqual(emojiService.get('non_existent'), '', 'Non existent emoji should fall back to empty string');
   
-  // Clean up
+  // Clean up and restore original content or initialize as empty json
   try {
-    unlinkSync(emojisPath);
+    if (originalContent !== null) {
+      writeFileSync(emojisPath, originalContent, 'utf8');
+    } else {
+      writeFileSync(emojisPath, '{}', 'utf8');
+    }
   } catch (_) {}
 });
