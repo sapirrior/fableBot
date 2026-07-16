@@ -18,8 +18,8 @@ Command names must be formatted as inline code blocks wrapped in backticks (`` `
 
 ### C. Metadata Separation
 Inline metadata attributes (e.g. status details, values, levels) must be separated using a centered middot (` · `) with surrounding spaces. Never use vertical pipelines (`|`) or slashes (`/`) as inline boundaries.
-* **Correct**: `Butterfly 🦋 · Rare · **80 ⌬**`
-* **Incorrect**: `Butterfly 🦋 | Rare | 80 ⌬` | `Butterfly 🦋 / Rare / 80 ⌬`
+* **Correct**: `Butterfly · Rare · **80 ⌬**`
+* **Incorrect**: `Butterfly | Rare | 80 ⌬` | `Butterfly / Rare / 80 ⌬`
 
 ---
 
@@ -42,3 +42,6 @@ Financial state parameters (balances) and secondary status indicators must resid
 Embed author names and footer texts must remain plain text. Discord does not support markdown parsing (such as `**` or `_`) in headers and footers; inclusion of formatting tokens creates visible syntax bugs.
 * **Correct**: `footer: { text: "Use /daily to claim your coins" }`
 * **Incorrect**: `footer: { text: "Use **/daily** to claim your coins" }`
+
+### D. Insect Entries are Text-Only
+All insect entries must be rendered as text-only. Do not use per-species emojis next to insect names in catch messages, collection lists, sell receipts, or autocomplete suggestions. Rarity context is communicated via embed field group headers and/or a `Tier: {rank}` line below the name.

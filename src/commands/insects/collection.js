@@ -84,7 +84,6 @@ export default {
 
       grouped[tier].push({
         name: insect.name,
-        emoji: insect.emoji || '🪲',
         count: entry.count,
         stars,
         sellValue
@@ -99,7 +98,7 @@ export default {
       if (!list || list.length === 0) continue;
 
       const lines = list.map(item => {
-        return `${item.emoji} **${item.name}** (×**${item.count}**)\n└─ \`${item.stars}\` · Value: **${item.sellValue} ⌬** each`;
+        return `**${item.name}** (×**${item.count}**)\n└─ \`${item.stars}\` · Value: **${item.sellValue} ⌬** each`;
       });
 
       fields.push({

@@ -40,7 +40,7 @@ export default {
       for (const col of dbCollection) {
         const insect = insectService.getById(col.insect_id);
         if (insect) {
-          choices.push({ name: `${insect.emoji} ${insect.name} (Owned: x${col.count})`, value: insect.id });
+          choices.push({ name: `${insect.name} (Owned: x${col.count})`, value: insect.id });
           uniqueTiers.add(insect.rarity || 'common');
         }
       }
@@ -139,7 +139,7 @@ export default {
 
         totalPayout += subtotal;
         totalSold += countToSell;
-        receipt.push(`${insect.emoji} **${insect.name}** ×${countToSell} (+${subtotal} ⌬)`);
+        receipt.push(`**${insect.name}** ×${countToSell} (+${subtotal} ⌬)`);
       }
 
       if (totalSold === 0) {

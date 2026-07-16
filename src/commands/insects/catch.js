@@ -180,10 +180,10 @@ export default {
     const meta = RARITY_MAP[mainCatch.rarity] || RARITY_MAP.common;
     const currency = ctx.config.currencyName || '⌬';
 
-    let description = `🎒 **Rustle in the bushes...**\n\nYou successfully captured a **${mainCatch.name}** ${mainCatch.emoji}!\nTier: **${meta.label}**\n\n📈 **+${result.xpGained} XP** gained!`;
+    let description = `🎒 **Rustle in the bushes...**\n\nYou successfully captured a **${mainCatch.name}**!\nTier: **${meta.label}**\n\n📈 **+${result.xpGained} XP** gained!`;
     
     if (result.caught.length > 1) {
-      const extras = result.caught.slice(1).map(c => `**${c.name}** ${c.emoji}`).join(', ');
+      const extras = result.caught.slice(1).map(c => `**${c.name}**`).join(', ');
       description += `\n✨ **Bonus Catches**: ${extras}`;
     }
 

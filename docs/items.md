@@ -44,14 +44,21 @@ The following items are available in the `/shop`:
 | Net Name | ID | Price | Durability | Rarity Modifiers |
 | :--- | :--- | :--- | :--- | :--- |
 | **Basic Net** 🕸️ | `basic_net` | **100 ⌬** | 20 uses | *None (Base Rates)* |
+| **Sturdy Carbon Net** 🎣 | `sturdy_net` | **250 ⌬** | 45 uses | *None (Standard Rates, High Durability)* |
+| **Reinforced Iron Net** ⚓ | `heavy_net` | **800 ⌬** | 25 uses | Rare: **2.5x** |
 | **Fine Mesh Net** 🏸 | `fine_net` | **500 ⌬** | 15 uses | Rare: **2.0x** · Legendary: **1.5x** |
+| **Lucky Net** 🍀 | `lucky_net` | **1,200 ⌬** | 12 uses | Uncommon: **1.5x** · Epic: **2.0x** |
 | **Golden Net** 🥇 | `golden_net` | **2,500 ⌬** | 10 uses | Legendary: **3.0x** · Celestial: **3.0x** |
 
 ### Baits (Consumable Category)
 | Bait Name | ID | Price | Multiplier / Utility Effects |
 | :--- | :--- | :--- | :--- |
+| **Sweet Sugar Spray** 💧 | `sugar_spray` | **50 ⌬** | Common: **2.0x** |
 | **Sweet Honey** 🍯 | `sweet_honey` | **150 ⌬** | Extra Catches: **+1 insect** |
+| **Rotten Fruit Lure** 🍎 | `rotten_fruit` | **200 ⌬** | Uncommon: **1.8x** · Epic: **1.8x** |
 | **Insect Pheromone** 🧪 | `pheromone` | **300 ⌬** | Uncommon: **2.0x** · Rare: **2.0x** |
+| **Golden Nectar** 🏺 | `golden_nectar` | **600 ⌬** | Extra Catches: **+2 insects** |
+| **Glowing Spore** 🍄 | `glowing_spore` | **1,000 ⌬** | Epic: **3.0x** · Legendary: **3.0x** |
 
 ---
 
@@ -62,11 +69,11 @@ When you catch an insect, Fable calculates the probability of rolling each rarit
 ### Rarity Weight Multipliers
 Fable uses a **tier-first cumulative probability selector**. The base weights for each rarity tier are:
 * **Common**: `60.0%`
-* **Uncommon**: `25.0%`
+* **Uncommon**: `28.0%`
 * **Rare**: `10.0%`
-* **Epic**: `4.0%`
-* **Legendary**: `0.9%`
-* **Celestial**: `0.1%`
+* **Epic**: `1.9%`
+* **Legendary**: `0.1%`
+* **Celestial**: `0.0%` (Base rate; can be boosted by nets)
 
 When a Net and a Bait are both active, their multipliers stack **multiplicatively**:
 $$\text{Modified Weight} = \text{Base Weight} \times \text{Net Multiplier} \times \text{Bait Multiplier}$$

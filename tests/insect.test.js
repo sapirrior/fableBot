@@ -20,6 +20,7 @@ test('InsectService - rollInsect tier-first cumulative probability selection mat
     assert.ok(rolled.name, 'Rolled insect must have a name');
     assert.ok(rolled.rarity, 'Rolled insect must have a rarity');
     assert.ok(rolled.value > 0, 'Rolled insect must have a positive value');
+    assert.strictEqual(rolled.emoji, undefined, 'Rolled insect must not have an emoji');
     
     // Check that values matches correct insect database configuration
     const checkObj = insectService.getById(rolled.id);

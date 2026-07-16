@@ -11,6 +11,28 @@
       "effects": []
     },
     {
+      "id": "sturdy_net",
+      "name": "Sturdy Carbon Net",
+      "emoji": "🎣",
+      "category": "net",
+      "price": 250,
+      "description": "A lightweight carbon fiber net. 45 uses. Standard catch rates.",
+      "durability": 45,
+      "effects": []
+    },
+    {
+      "id": "heavy_net",
+      "name": "Reinforced Iron Net",
+      "emoji": "⚓",
+      "category": "net",
+      "price": 800,
+      "description": "A heavy iron net. 25 uses. Boosts Rare catch rates.",
+      "durability": 25,
+      "effects": [
+        { "type": "tier_multiplier", "tier": "rare", "value": 2.5 }
+      ]
+    },
+    {
       "id": "fine_net",
       "name": "Fine Mesh Net",
       "emoji": "🏸",
@@ -21,6 +43,19 @@
       "effects": [
         { "type": "tier_multiplier", "tier": "rare", "value": 2.0 },
         { "type": "tier_multiplier", "tier": "legendary", "value": 1.5 }
+      ]
+    },
+    {
+      "id": "lucky_net",
+      "name": "Lucky Net",
+      "emoji": "🍀",
+      "category": "net",
+      "price": 1200,
+      "description": "A clover-woven net. 12 uses. Boosts Uncommon and Epic catch rates.",
+      "durability": 12,
+      "effects": [
+        { "type": "tier_multiplier", "tier": "uncommon", "value": 1.5 },
+        { "type": "tier_multiplier", "tier": "epic", "value": 2.0 }
       ]
     },
     {
@@ -37,6 +72,18 @@
       ]
     },
     {
+      "id": "sugar_spray",
+      "name": "Sweet Sugar Spray",
+      "emoji": "💧",
+      "category": "bait",
+      "price": 50,
+      "description": "A cheap sugary mist. Doubles Common catch rates for this use.",
+      "durability": null,
+      "effects": [
+        { "type": "tier_multiplier", "tier": "common", "value": 2.0 }
+      ]
+    },
+    {
       "id": "sweet_honey",
       "name": "Sweet Honey",
       "emoji": "🍯",
@@ -46,6 +93,19 @@
       "durability": null,
       "effects": [
         { "type": "extra_catch", "value": 1 }
+      ]
+    },
+    {
+      "id": "rotten_fruit",
+      "name": "Rotten Fruit Lure",
+      "emoji": "🍎",
+      "category": "bait",
+      "price": 200,
+      "description": "Fermenting fruit. Boosts Uncommon and Epic catch rates for this use.",
+      "durability": null,
+      "effects": [
+        { "type": "tier_multiplier", "tier": "uncommon", "value": 1.8 },
+        { "type": "tier_multiplier", "tier": "epic", "value": 1.8 }
       ]
     },
     {
@@ -59,6 +119,31 @@
       "effects": [
         { "type": "tier_multiplier", "tier": "uncommon", "value": 2.0 },
         { "type": "tier_multiplier", "tier": "rare", "value": 2.0 }
+      ]
+    },
+    {
+      "id": "golden_nectar",
+      "name": "Golden Nectar",
+      "emoji": "🏺",
+      "category": "bait",
+      "price": 600,
+      "description": "A drop of rare golden nectar. Catches 2 extra insects this use.",
+      "durability": null,
+      "effects": [
+        { "type": "extra_catch", "value": 2 }
+      ]
+    },
+    {
+      "id": "glowing_spore",
+      "name": "Glowing Spore",
+      "emoji": "🍄",
+      "category": "bait",
+      "price": 1000,
+      "description": "Luminous fungal spores. Greatly boosts Epic and Legendary catch rates.",
+      "durability": null,
+      "effects": [
+        { "type": "tier_multiplier", "tier": "epic", "value": 3.0 },
+        { "type": "tier_multiplier", "tier": "legendary", "value": 3.0 }
       ]
     }
   ]
